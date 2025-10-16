@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // FIX: Import the shared Tab type.
 import type { PortfolioData, Theme, Layout, Tab } from '../../../types';
-import { generateBio, suggestProjects, generateTheme, suggestLayout } from '../../../services/geminiService';
+import { generateBio, suggestProjects, generateTheme, suggestLayout, suggestSkills } from '../../../services/geminiService';
 import { SparklesIcon } from './Icons';
 
 interface AIAssistantTabProps {
@@ -19,6 +19,7 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({ data, setData, addTheme
         projects: false,
         theme: false,
         layout: false,
+        skills: false,
     });
     const [error, setError] = useState('');
 
@@ -46,6 +47,23 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({ data, setData, addTheme
             setError('Failed to suggest projects. Please check your API key.');
         } finally {
             setIsLoading(prev => ({ ...prev, projects: false }));
+        }
+    };
+
+    const handleSuggestSkills = async () => {
+        setIsLoading(prev => ({ ...prev, skills: true }));
+        setError('');
+        try {
+            const suggested = await suggestSkills(data.basicInfo.title, data.basicInfo.bio);
+            setData(prev => {
+                const combinedSkills = new Set([...prev.skills, ...suggested]);
+                return { ...prev, skills: Array.from(combinedSkills) };
+            });
+            setActiveTab('Basic Info');
+        } catch (err) {
+            setError('Failed to suggest skills. Please check your API key.');
+        } finally {
+            setIsLoading(prev => ({ ...prev, skills: false }));
         }
     };
     
@@ -93,6 +111,8 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({ data, setData, addTheme
              <div className="space-y-4">
                 {/* FIX: The Button component requires a 'children' prop for its content. Added text content as children. */}
                 <Button onClick={handleGenerateBio} loading={isLoading.bio}>Write My Bio</Button>
+                {/* FIX: The Button component requires a 'children' prop for its content. Added text content as children. */}
+                <Button onClick={handleSuggestSkills} loading={isLoading.skills}>Suggest Skills</Button>
                 {/* FIX: The Button component requires a 'children' prop for its content. Added text content as children. */}
                 <Button onClick={handleSuggestProjects} loading={isLoading.projects}>Suggest Projects</Button>
                 {/* FIX: The Button component requires a 'children' prop for its content. Added text content as children. */}

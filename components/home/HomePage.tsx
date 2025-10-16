@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Logo } from '../common/Logo';
-import { SparklesIcon, CodeBracketIcon, PaintBrushIcon, ArrowDownOnSquareIcon } from '../builder/tabs/Icons';
+import { SparklesIcon, CodeBracketIcon, PaintBrushIcon, ArrowDownOnSquareIcon, ShieldCheckIcon, CubeTransparentIcon, HeartIcon } from '../builder/tabs/Icons';
 
 interface HomePageProps {
   onStartBuilding: () => void;
@@ -110,8 +110,46 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBuilding }) => {
            </div>
        </div>
 
+      {/* About Section */}
+       <div className="py-20 px-4 bg-gray-900 border-t border-white/10">
+           <div className="max-w-6xl mx-auto">
+               <motion.h2 
+                   className="text-4xl font-extrabold text-center mb-4"
+                   initial={{ opacity: 0, y:20 }}
+                   whileInView={{ opacity: 1, y: 0 }}
+                   viewport={{ once: true, amount: 0.5 }}
+                   transition={{ duration: 0.5 }}
+               >
+                   Our Philosophy
+               </motion.h2>
+               <motion.p 
+                   className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-12"
+                   initial={{ opacity: 0, y:20 }}
+                   whileInView={{ opacity: 1, y: 0 }}
+                   viewport={{ once: true, amount: 0.5 }}
+                   transition={{ duration: 0.5, delay: 0.1 }}
+               >
+                   AutoPortfolio Studio is built on the principles of privacy, simplicity, and community collaboration.
+               </motion.p>
+               <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                   <FeatureCard icon={<ShieldCheckIcon className="w-6 h-6"/>} title="Privacy First">
+                       Runs entirely in your browser. We never see, store, or share your data. No accounts, no tracking, just you and your creation.
+                   </FeatureCard>
+                   <FeatureCard icon={<CubeTransparentIcon className="w-6 h-6"/>} title="Modern & Open Tech">
+                       Built with React, TypeScript, and TailwindCSS for a fast experience. Powered by the Google Gemini API for intelligent content generation.
+                   </FeatureCard>
+                   <FeatureCard icon={<HeartIcon className="w-6 h-6"/>} title="Community Driven">
+                       This project is open-source! We welcome contributions and ideas. 
+                       <a href="https://github.com/dorukdogular/autoportfolio-studio" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-semibold block mt-2">
+                           View on GitHub &rarr;
+                       </a>
+                   </FeatureCard>
+               </div>
+           </div>
+       </div>
+
        {/* Final CTA Section */}
-       <div className="py-20 px-4 text-center border-t border-white/10">
+       <div className="py-20 px-4 text-center">
             <h2 className="text-4xl font-extrabold mb-4">Ready to Build Your Portfolio?</h2>
             <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto">No accounts, no credit cards, no hassle. Just a beautiful portfolio, in minutes.</p>
              <motion.button
@@ -125,7 +163,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBuilding }) => {
        </div>
 
       {/* Footer */}
-      <footer className="text-center py-6 text-gray-400 text-sm bg-gray-900">
+      <footer className="text-center py-6 text-gray-400 text-sm bg-gray-900 border-t border-white/10">
         <div className="flex justify-center items-center gap-4">
             <p>© Doruk Doğular 2025</p>
             <a href="https://github.com/dorukdogular" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">

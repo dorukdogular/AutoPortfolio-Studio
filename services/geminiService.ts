@@ -164,3 +164,33 @@ export async function suggestLayout(bio: string, title: string, layouts: Layout[
         return layouts[0].id;
     }
 }
+
+export async function suggestSkills(title: string, bio: string): Promise<string[]> {
+    const prompt = `Based on the job title "${title}" and this bio: "${bio}", suggest a list of 8-12 relevant skills. The skills should be concise and professional.`;
+
+    const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    skills: {
+                        type: Type.ARRAY,
+                        items: { type: Type.STRING }
+                    }
+                },
+                required: ["skills"]
+            }
+        }
+    });
+
+    try {
+        const json = JSON.parse(response.text);
+        return json.skills || [];
+    } catch (e) {
+        console.error("Failed to parse JSON for skill suggestions:", response.text);
+        return [];
+    }
+}
