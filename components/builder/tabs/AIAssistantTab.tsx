@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 // FIX: Import the shared Tab type.
 import type { PortfolioData, Theme, Layout, Tab } from '../../../types';
@@ -9,7 +7,7 @@ import { SparklesIcon } from './Icons';
 interface AIAssistantTabProps {
   data: PortfolioData;
   setData: React.Dispatch<React.SetStateAction<PortfolioData>>;
-  addTheme: (theme: Omit<Theme, 'id' | 'isAIGenerated'>) => void;
+  addTheme: (theme: Omit<Theme, 'id'>) => void;
   layouts: Layout[];
   // FIX: Update prop type to match the state setter from useState.
   setActiveTab: React.Dispatch<React.SetStateAction<Tab>>;
@@ -56,7 +54,7 @@ const AIAssistantTab: React.FC<AIAssistantTabProps> = ({ data, setData, addTheme
         setError('');
         try {
             const newTheme = await generateTheme();
-            addTheme(newTheme);
+            addTheme({ ...newTheme, isAIGenerated: true });
         } catch (err) {
             setError('Failed to generate theme. Please check your API key.');
         } finally {

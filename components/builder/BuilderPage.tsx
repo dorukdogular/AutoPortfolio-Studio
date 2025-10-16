@@ -43,11 +43,10 @@ const BuilderPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('Basic Info');
   const [isDeployModalOpen, setDeployModalOpen] = useState(false);
 
-  const addAiTheme = (newTheme: Omit<Theme, 'id' | 'isAIGenerated'>) => {
+  const addTheme = (theme: Omit<Theme, 'id'>) => {
     const themeWithId: Theme = {
-        ...newTheme,
-        id: `ai-${Date.now()}`,
-        isAIGenerated: true,
+        ...theme,
+        id: `${theme.isAIGenerated ? 'ai' : 'custom'}-${Date.now()}`,
     };
     setThemes(prev => [...prev, themeWithId]);
     setData(prev => ({...prev, themeId: themeWithId.id}));
@@ -76,9 +75,9 @@ const BuilderPage: React.FC = () => {
       case 'Certs': return <CertificationsTab data={data} setData={setData} />;
       case 'Socials': return <SocialLinksTab data={data} setData={setData} />;
       case 'Layout': return <LayoutTab data={data} setData={setData} />;
-      case 'Theme': return <ThemeTab data={data} setData={setData} themes={themes} />;
+      case 'Theme': return <ThemeTab data={data} setData={setData} themes={themes} addTheme={addTheme} />;
       case 'Settings': return <SiteSettingsTab data={data} setData={setData} />;
-      case 'AI Assistant': return <AIAssistantTab data={data} setData={setData} addTheme={addAiTheme} layouts={LAYOUTS} setActiveTab={setActiveTab} />;
+      case 'AI Assistant': return <AIAssistantTab data={data} setData={setData} addTheme={addTheme} layouts={LAYOUTS} setActiveTab={setActiveTab} />;
       default: return null;
     }
   };

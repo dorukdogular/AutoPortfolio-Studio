@@ -47,25 +47,60 @@ export async function suggestProjects(name: string, title: string, skills: strin
     }
 }
 
+const colorSchema = {
+    type: Type.OBJECT,
+    properties: {
+        primary: { type: Type.STRING },
+        secondary: { type: Type.STRING },
+        background: { type: Type.STRING },
+        card: { type: Type.STRING },
+        text: { type: Type.STRING },
+        heading: { type: Type.STRING },
+    },
+    required: ["primary", "secondary", "background", "card", "text", "heading"]
+};
+
 export async function generateTheme(): Promise<Omit<Theme, 'id' | 'isAIGenerated'>> {
     const prompt = `Generate a unique and modern color scheme for a developer portfolio website. Provide a creative name for the theme. The theme must include two palettes: one for light mode and one for dark mode. Each palette must have exactly these 6 properties: 'primary' (main interactive elements), 'secondary' (accent color), 'background' (page background), 'card' (background for cards/sections), 'text' (main body text), and 'heading' (for titles). All color values must be in hex format (e.g., #RRGGBB).`;
-
-    const colorSchema = {
-        type: Type.OBJECT,
-        properties: {
-            primary: { type: Type.STRING },
-            secondary: { type: Type.STRING },
-            background: { type: Type.STRING },
-            card: { type: Type.STRING },
-            text: { type: Type.STRING },
-            heading: { type: Type.STRING },
-        },
-        required: ["primary", "secondary", "background", "card", "text", "heading"]
-    };
 
     const response = await ai.models.generateContent({
         model,
         contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    name: { type: Type.STRING, description: "A creative name for the theme." },
+                    light: colorSchema,
+                    dark: colorSchema,
+                },
+                required: ["name", "light", "dark"]
+            }
+        }
+    });
+
+    const json = JSON.parse(response.text);
+    return json;
+}
+
+
+export async function generateThemeFromImage(imageBase64: string): Promise<Omit<Theme, 'id' | 'isAIGenerated'>> {
+    const prompt = `Analyze the provided image and generate a unique and modern color scheme for a developer portfolio website inspired by its colors. Provide a creative name for the theme (e.g., "Sunset Glow", "Forest Mist"). The theme must include two palettes: one for light mode and one for dark mode. Each palette must have exactly these 6 properties: 'primary' (main interactive elements), 'secondary' (accent color), 'background' (page background), 'card' (background for cards/sections), 'text' (main body text), and 'heading' (for titles). Ensure the colors are harmonious and accessible (good contrast). All color values must be in hex format (e.g., #RRGGBB).`;
+    
+    const mimeType = imageBase64.substring(imageBase64.indexOf(":") + 1, imageBase64.indexOf(";"));
+    const data = imageBase64.substring(imageBase64.indexOf(",") + 1);
+
+    const imagePart = {
+      inlineData: {
+        mimeType,
+        data,
+      },
+    };
+
+    const response = await ai.models.generateContent({
+        model,
+        contents: { parts: [ { text: prompt }, imagePart] },
         config: {
             responseMimeType: "application/json",
             responseSchema: {
