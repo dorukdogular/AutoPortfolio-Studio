@@ -102,3 +102,8 @@ export interface PortfolioData {
 }
 
 export type Tab = 'Basic Info' | 'Projects' | 'Experience' | 'Education' | 'Testimonials' | 'Certs' | 'Socials' | 'Layout' | 'Theme' | 'Settings' | 'AI Assistant';
+
+export interface ExportData {
+  portfolioData: PortfolioData;
+  customThemes: Theme[];
+}
