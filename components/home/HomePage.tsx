@@ -46,7 +46,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBuilding }) => {
             AutoPortfolio Studio
           </h1>
           <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl">
-            The AI-powered portfolio generator that builds, writes, and designs for you. Go from zero to a deployed portfolio in minutes.
+            The ultimate static portfolio studio that designs and builds for you. Go from zero to a deployed portfolio in minutes.
           </p>
           <motion.button
             onClick={onStartBuilding}
@@ -73,7 +73,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBuilding }) => {
             </motion.h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {/* FIX: The FeatureCard component requires a 'children' prop for its content. Added text content as children. */}
-                <FeatureCard icon={<SparklesIcon className="w-6 h-6"/>} title="AI-Powered Content">Let AI write your bio, suggest project ideas, and even create unique color themes for you.</FeatureCard>
+                <FeatureCard icon={<SparklesIcon className="w-6 h-6"/>} title="Instant Live Customizer">Add your personal details, select your custom colors, and watch the layout update live.</FeatureCard>
                 {/* FIX: The FeatureCard component requires a 'children' prop for its content. Added text content as children. */}
                 <FeatureCard icon={<CodeBracketIcon className="w-6 h-6"/>} title="Versatile Layouts">Choose from 9+ professionally designed, fully responsive layouts to match your style.</FeatureCard>
                 {/* FIX: The FeatureCard component requires a 'children' prop for its content. Added text content as children. */}
@@ -92,7 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBuilding }) => {
                    <div className="flex-1">
                        <div className="text-5xl font-bold text-indigo-400 mb-2">1</div>
                        <h3 className="text-2xl font-bold mb-2">Add Your Info</h3>
-                       <p className="text-gray-300">Fill in your name, title, skills, projects, and social links. Or, let our AI do it for you.</p>
+                       <p className="text-gray-300">Fill in your name, title, skills, projects, and social links. Watch the changes update instantly.</p>
                    </div>
                    <div className="text-indigo-400/50 text-2xl hidden md:block">&rarr;</div>
                    <div className="flex-1">
@@ -136,7 +136,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBuilding }) => {
                        Runs entirely in your browser. We never see, store, or share your data. No accounts, no tracking, just you and your creation.
                    </FeatureCard>
                    <FeatureCard icon={<CubeTransparentIcon className="w-6 h-6"/>} title="Modern & Open Tech">
-                       Built with React, TypeScript, and TailwindCSS for a fast experience. Powered by the Google Gemini API for intelligent content generation.
+                       Built with React, TypeScript, and TailwindCSS for a fast experience. Completely client-side, running 100% in your browser for speed.
                    </FeatureCard>
                    <FeatureCard icon={<HeartIcon className="w-6 h-6"/>} title="Community Driven">
                        This project is open-source! We welcome contributions and ideas. 

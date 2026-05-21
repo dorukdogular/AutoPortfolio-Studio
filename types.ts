@@ -101,7 +101,7 @@ export interface PortfolioData {
   siteSettings: SiteSettings;
 }
 
-export type Tab = 'Basic Info' | 'Projects' | 'Experience' | 'Education' | 'Testimonials' | 'Certs' | 'Socials' | 'Layout' | 'Theme' | 'Settings' | 'AI Assistant';
+export type Tab = 'Basic Info' | 'Projects' | 'Experience' | 'Education' | 'Testimonials' | 'Certs' | 'Socials' | 'Layout' | 'Theme' | 'Settings';
 
 export interface ExportData {
   portfolioData: PortfolioData;

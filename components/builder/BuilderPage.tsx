@@ -6,7 +6,6 @@ import BasicInfoTab from './tabs/BasicInfoTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import SocialLinksTab from './tabs/SocialLinksTab';
 import ThemeTab from './tabs/ThemeTab';
-import AIAssistantTab from './tabs/AIAssistantTab';
 import LayoutTab from './tabs/LayoutTab';
 import ExperienceTab from './tabs/ExperienceTab';
 import EducationTab from './tabs/EducationTab';
@@ -105,7 +104,7 @@ const BuilderPage: React.FC = () => {
     event.target.value = ''; // Reset input to allow re-uploading the same file
   };
 
-  const tabs: Tab[] = ['Basic Info', 'Projects', 'Experience', 'Education', 'Testimonials', 'Certs', 'Socials', 'Layout', 'Theme', 'Settings', 'AI Assistant'];
+  const tabs: Tab[] = ['Basic Info', 'Projects', 'Experience', 'Education', 'Testimonials', 'Certs', 'Socials', 'Layout', 'Theme', 'Settings'];
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -119,7 +118,6 @@ const BuilderPage: React.FC = () => {
       case 'Layout': return <LayoutTab data={data} setData={setData} />;
       case 'Theme': return <ThemeTab data={data} setData={setData} themes={themes} addTheme={addTheme} />;
       case 'Settings': return <SiteSettingsTab data={data} setData={setData} />;
-      case 'AI Assistant': return <AIAssistantTab data={data} setData={setData} addTheme={addTheme} layouts={LAYOUTS} setActiveTab={setActiveTab} />;
       default: return null;
     }
   };

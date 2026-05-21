@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import type { PortfolioData, Theme, ThemeColors } from '../../../types';
-import { generateThemeFromImage } from '../../../services/geminiService';
-import { SparklesIcon, PhotoIcon } from './Icons';
+import { SparklesIcon } from './Icons';
 
 interface ThemeTabProps {
   data: PortfolioData;
@@ -62,42 +61,11 @@ const CustomThemeCreator: React.FC<{ onSave: (theme: Omit<Theme, 'id' | 'isAIGen
 
 
 const ThemeTab: React.FC<ThemeTabProps> = ({ data, setData, themes, addTheme }) => {
-  const [isGeneratingFromImage, setIsGeneratingFromImage] = useState(false);
-  const [aiError, setAiError] = useState('');
   const [isCreatingCustom, setIsCreatingCustom] = useState(false);
 
   const handleThemeChange = (themeId: string) => {
     setData(prev => ({ ...prev, themeId }));
   };
-  
-  const handleGenerateFromImage = async () => {
-    if (!data.basicInfo.profileImage) {
-        setAiError('Please upload a profile image in the "Basic Info" tab first.');
-        return;
-    }
-    setIsGeneratingFromImage(true);
-    setAiError('');
-    try {
-        const newTheme = await generateThemeFromImage(data.basicInfo.profileImage);
-        addTheme({ ...newTheme, isAIGenerated: true });
-    } catch(e) {
-        setAiError('Failed to generate theme from image. Please check API key and try again.');
-        console.error(e);
-    } finally {
-        setIsGeneratingFromImage(false);
-    }
-  };
-  
-  const ActionButton: React.FC<{ onClick: () => void; loading: boolean; disabled?: boolean; children: React.ReactNode; icon: React.ReactNode; }> = 
-  ({ onClick, loading, disabled, children, icon }) => (
-    <button
-        onClick={onClick}
-        disabled={loading || disabled}
-        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed font-semibold"
-    >
-        {loading ? 'Generating...' : <>{icon} {children}</>}
-    </button>
-  );
 
   return (
     <div>
@@ -124,12 +92,6 @@ const ThemeTab: React.FC<ThemeTabProps> = ({ data, setData, themes, addTheme }) 
       
       <div className="mt-6 pt-6 border-t border-gray-700 space-y-4">
         <h3 className="text-lg font-semibold">Create a New Theme</h3>
-        <ActionButton onClick={handleGenerateFromImage} loading={isGeneratingFromImage} disabled={!data.basicInfo.profileImage} icon={<PhotoIcon className="w-5 h-5" />}>
-          Generate from Image
-        </ActionButton>
-        {!data.basicInfo.profileImage && <p className="text-xs text-center text-gray-400">Upload a profile image in 'Basic Info' to enable this.</p>}
-        {aiError && <p className="text-red-400 bg-red-900/50 p-2 rounded-md text-sm text-center">{aiError}</p>}
-        
         <button onClick={() => setIsCreatingCustom(prev => !prev)} className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-600 rounded-md hover:bg-gray-500 font-semibold">
           {isCreatingCustom ? 'Cancel' : 'Create Custom Theme'}
         </button>
