@@ -85,6 +85,21 @@ export interface SiteSettings {
   contentWidth: ContentWidth;
 }
 
+
+
+export interface ContactFormSettings {
+  enabled: boolean;
+  provider: 'web3forms' | 'formspree';
+  apiKey: string;
+  buttonText: string;
+  successMessage: string;
+}
+
+export interface AdvancedCodeSettings {
+  customCss: string;
+  customJs: string;
+}
+
 export interface PortfolioData {
   basicInfo: BasicInfo;
   skills: string[];
@@ -99,6 +114,8 @@ export interface PortfolioData {
   themeId: string;
   layoutId: string;
   siteSettings: SiteSettings;
+  contactForm?: ContactFormSettings;
+  advancedCode?: AdvancedCodeSettings;
 }
 
 export type Tab = 'Basic Info' | 'Projects' | 'Experience' | 'Education' | 'Testimonials' | 'Certs' | 'Socials' | 'Layout' | 'Theme' | 'Settings';

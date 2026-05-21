@@ -77,12 +77,314 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
     ${generateLayoutSpecificCSS(data.layoutId)}
 
     </style>
+    ${data.advancedCode?.customCss ? `<style id="custom-injected-styles">${data.advancedCode.customCss}</style>` : ''}
     `;
 };
 
 // =================================================================================
 // REUSABLE SECTION RENDERERS
 // =================================================================================
+
+const renderContactForm = (data: PortfolioData) => {
+    if (!data.contactForm?.enabled) return '';
+    const form = data.contactForm;
+    const provider = form.provider;
+    const apiKey = form.apiKey || '';
+    const buttonText = escape(form.buttonText || 'Send Message');
+
+    let actionUrl = '';
+    let hiddenInputs = '';
+
+    if (provider === 'web3forms') {
+        actionUrl = 'https://api.web3forms.com/submit';
+        hiddenInputs = `<input type="hidden" name="access_key" value="${escape(apiKey)}">`;
+    } else {
+        actionUrl = `https://formspree.io/f/${escape(apiKey)}`;
+    }
+
+    const layoutId = data.layoutId;
+
+    // ----------------- Retro (Terminal Style) Form -----------------
+    if (layoutId === 'retro') {
+        return `
+        <section id="contact" class="mt-8 border-t border-[var(--color-primary)] pt-6 font-mono text-left">
+          <div class="text-xs uppercase text-[var(--color-secondary)] mb-4">&gt;&gt; SECURE_COMMUNICATION_LINK</div>
+          <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4 max-w-lg">
+            ${hiddenInputs}
+            <div>
+              <label for="form-name" class="block text-sm text-[var(--color-primary)] mb-1">&gt; IDENTIFIER (NAME):</label>
+              <input type="text" id="form-name" name="name" required class="w-full bg-black border border-[var(--color-primary)] rounded-none px-3 py-2 text-white focus:ring-2 focus:ring-[var(--color-secondary)] focus:outline-none font-mono text-sm">
+            </div>
+            <div>
+              <label for="form-email" class="block text-sm text-[var(--color-primary)] mb-1">&gt; TRANSMISSION_ADDR (EMAIL):</label>
+              <input type="email" id="form-email" name="email" required class="w-full bg-black border border-[var(--color-primary)] rounded-none px-3 py-2 text-white focus:ring-2 focus:ring-[var(--color-secondary)] focus:outline-none font-mono text-sm">
+            </div>
+            <div>
+              <label for="form-message" class="block text-sm text-[var(--color-primary)] mb-1">&gt; ENCRYPTED_PAYLOAD (MESSAGE):</label>
+              <textarea id="form-message" name="message" rows="4" required class="w-full bg-black border border-[var(--color-primary)] rounded-none px-3 py-2 text-white focus:ring-2 focus:ring-[var(--color-secondary)] focus:outline-none font-mono text-sm"></textarea>
+            </div>
+            <div id="form-feedback" class="hidden text-sm p-2 border border-[var(--color-primary)]"></div>
+            <button type="submit" id="form-submit-btn" class="border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 font-bold py-2 px-4 rounded-none transition-colors text-sm shadow-md flex items-center justify-center gap-2">
+              <span>Execute Submission</span>
+              <span id="form-spinner" class="hidden animate-spin h-3.5 w-3.5 border-2 border-[var(--color-primary)] border-t-transparent rounded-full"></span>
+            </button>
+          </form>
+        </section>
+        `;
+    }
+
+    // ----------------- Booklet (Presentation Card Style) Form -----------------
+    if (layoutId === 'booklet') {
+        return `
+        <div class="max-w-xl mx-auto card flex flex-col justify-center border border-[var(--color-text)]/5 bg-[var(--color-card)] shadow-2xl p-8 rounded-2xl">
+          <h2 class="text-3xl font-extrabold mb-6 text-center text-[var(--color-heading)]">Get in Touch</h2>
+          <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-5">
+            ${hiddenInputs}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="form-name" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1.5">Name</label>
+                <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all">
+              </div>
+              <div>
+                <label for="form-email" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1.5">Email</label>
+                <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all">
+              </div>
+            </div>
+            <div>
+              <label for="form-message" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1.5">Message</label>
+              <textarea id="form-message" name="message" rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all"></textarea>
+            </div>
+            <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+            <button type="submit" id="form-submit-btn" class="w-full bg-[var(--color-primary)] text-white font-bold py-3.5 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md flex items-center justify-center gap-2 active:scale-[0.98]">
+              <span>${buttonText}</span>
+              <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+            </button>
+          </form>
+        </div>
+        `;
+    }
+
+    // ----------------- Centered-Card (Compact Flat Style) Form -----------------
+    if (layoutId === 'centered-card') {
+        return `
+        <section id="contact" class="mt-12 border-t border-[var(--color-text)]/10 pt-10">
+          <h2 class="text-3xl font-extrabold mb-6 text-center text-[var(--color-heading)]">Contact Me</h2>
+          <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4 max-w-lg mx-auto">
+            ${hiddenInputs}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <input type="text" id="form-name" name="name" placeholder="Your Name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+              </div>
+              <div>
+                <input type="email" id="form-email" name="email" placeholder="Your Email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+              </div>
+            </div>
+            <div>
+              <textarea id="form-message" name="message" placeholder="Your Message..." rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]"></textarea>
+            </div>
+            <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+            <button type="submit" id="form-submit-btn" class="w-full bg-[var(--color-primary)] text-white font-bold py-3.5 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-all text-sm shadow-md flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.98]">
+              <span>${buttonText}</span>
+              <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+            </button>
+          </form>
+        </section>
+        `;
+    }
+
+    // ----------------- Interactive Blocks (No Nested Card) Form -----------------
+    if (layoutId === 'interactive-blocks') {
+        return `
+        <div id="contact" class="w-full">
+          <h2 class="text-2xl font-bold mb-6 text-[var(--color-heading)]">Get in Touch</h2>
+          <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4">
+            ${hiddenInputs}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="form-name" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Name</label>
+                <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-lg px-4 py-2.5 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+              </div>
+              <div>
+                <label for="form-email" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Email Address</label>
+                <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-lg px-4 py-2.5 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+              </div>
+            </div>
+            <div>
+              <label for="form-message" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Message</label>
+              <textarea id="form-message" name="message" rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-lg px-4 py-2.5 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]"></textarea>
+            </div>
+            <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+            <button type="submit" id="form-submit-btn" class="w-full md:w-auto bg-[var(--color-primary)] text-white font-bold py-2.5 px-8 rounded-lg hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.98]">
+              <span>${buttonText}</span>
+              <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+            </button>
+          </form>
+        </div>
+        `;
+    }
+
+    // ----------------- Material Resume (Paper Layout Style) Form -----------------
+    if (layoutId === 'material-resume') {
+        return `
+        <section id="contact" class="mt-12 border-t border-gray-200/50 pt-8">
+          <h2 class="text-xl font-bold mb-6 text-[var(--color-heading)] border-b pb-2 tracking-wide uppercase text-sm">Contact Me</h2>
+          <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-5 max-w-2xl">
+            ${hiddenInputs}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="form-name" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Full Name</label>
+                <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border-b-2 border-gray-300 focus:border-[var(--color-primary)] px-2 py-2 text-sm focus:outline-none transition-colors">
+              </div>
+              <div>
+                <label for="form-email" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Email Address</label>
+                <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border-b-2 border-gray-300 focus:border-[var(--color-primary)] px-2 py-2 text-sm focus:outline-none transition-colors">
+              </div>
+            </div>
+            <div>
+              <label for="form-message" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Message</label>
+              <textarea id="form-message" name="message" rows="3" required class="w-full bg-[var(--color-background)] border-b-2 border-gray-300 focus:border-[var(--color-primary)] px-2 py-2 text-sm focus:outline-none transition-colors"></textarea>
+            </div>
+            <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+            <button type="submit" id="form-submit-btn" class="bg-[var(--color-primary)] text-white hover:bg-[var(--color-secondary)] font-bold py-2.5 px-8 rounded shadow-md text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+              <span>${buttonText}</span>
+              <span id="form-spinner" class="hidden animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full"></span>
+            </button>
+          </form>
+        </section>
+        `;
+    }
+
+    // ----------------- Timeline (Visual Connector Node) Form -----------------
+    if (layoutId === 'timeline') {
+        return `
+        <section id="contact" class="section">
+          <h2 class="section-title">Get In Touch</h2>
+          <div class="max-w-2xl mx-auto relative before:absolute before:inset-0 before:left-6 before:h-full before:w-0.5 before:bg-[var(--color-primary)]/20 md:before:left-1/2 md:before:-ml-0.25">
+            <!-- Timeline connector dot -->
+            <div class="absolute left-[18px] top-0 h-6 w-6 rounded-full bg-[var(--color-primary)] border-4 border-[var(--color-background)] md:left-1/2 md:-ml-3 z-10 animate-pulse"></div>
+            
+            <div class="pl-12 md:pl-0 md:pt-8">
+              <div class="card border border-[var(--color-text)]/5 bg-[var(--color-card)] shadow-xl p-6 rounded-2xl max-w-xl mx-auto">
+                <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4">
+                  ${hiddenInputs}
+                  <div>
+                    <label for="form-name" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Name</label>
+                    <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+                  </div>
+                  <div>
+                    <label for="form-email" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Email Address</label>
+                    <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+                  </div>
+                  <div>
+                    <label for="form-message" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Message</label>
+                    <textarea id="form-message" name="message" rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]"></textarea>
+                  </div>
+                  <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+                  <button type="submit" id="form-submit-btn" class="w-full bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.98]">
+                    <span>${buttonText}</span>
+                    <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+        `;
+    }
+
+    // ----------------- Minimal Split Layout Form -----------------
+    if (layoutId === 'minimal-split') {
+        return `
+        <section id="contact" class="section">
+          <h2 class="text-3xl font-extrabold mb-8 text-[var(--color-heading)] border-b border-[var(--color-text)]/10 pb-4">Get in Touch</h2>
+          <div class="card border border-[var(--color-text)]/5 bg-[var(--color-card)] shadow-xl p-6 rounded-2xl">
+            <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4">
+              ${hiddenInputs}
+              <div>
+                <label for="form-name" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Your Name</label>
+                <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+              </div>
+              <div>
+                <label for="form-email" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Email Address</label>
+                <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+              </div>
+              <div>
+                <label for="form-message" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Message</label>
+                <textarea id="form-message" name="message" rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]"></textarea>
+              </div>
+              <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+              <button type="submit" id="form-submit-btn" class="w-full bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.98]">
+                <span>${buttonText}</span>
+                <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+              </button>
+            </form>
+          </div>
+        </section>
+        `;
+    }
+
+    // ----------------- Gallery Grid Layout Form -----------------
+    if (layoutId === 'gallery-grid') {
+        return `
+        <section id="contact" class="section mt-12">
+          <h2 class="section-title">Let's Connect</h2>
+          <div class="max-w-2xl mx-auto card border border-[var(--color-text)]/5 bg-[var(--color-card)] shadow-xl p-8 rounded-3xl">
+            <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4">
+              ${hiddenInputs}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="form-name" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Name</label>
+                  <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-2xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+                </div>
+                <div>
+                  <label for="form-email" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Email</label>
+                  <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-2xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+                </div>
+              </div>
+              <div>
+                <label for="form-message" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Message</label>
+                <textarea id="form-message" name="message" rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-2xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]"></textarea>
+              </div>
+              <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+              <button type="submit" id="form-submit-btn" class="w-full bg-[var(--color-primary)] text-white font-bold py-3.5 px-6 rounded-2xl hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.98]">
+                <span>${buttonText}</span>
+                <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+              </button>
+            </form>
+          </div>
+        </section>
+        `;
+    }
+
+    // ----------------- Default Premium Layout (Classic Style) -----------------
+    return `
+    <section id="contact" class="section">
+      <h2 class="section-title">Contact</h2>
+      <div class="max-w-xl mx-auto card border border-[var(--color-text)]/5 bg-[var(--color-card)] shadow-xl p-8 rounded-2xl">
+        <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-4">
+          ${hiddenInputs}
+          <div>
+            <label for="form-name" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Name</label>
+            <input type="text" id="form-name" name="name" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+          </div>
+          <div>
+            <label for="form-email" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Email Address</label>
+            <input type="email" id="form-email" name="email" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]">
+          </div>
+          <div>
+            <label for="form-message" class="block text-xs font-semibold text-[var(--color-text)] opacity-70 uppercase tracking-wider mb-1">Message</label>
+            <textarea id="form-message" name="message" rows="4" required class="w-full bg-[var(--color-background)] border border-[var(--color-text)]/10 rounded-xl px-4 py-3 text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none text-sm transition-all focus:border-[var(--color-primary)]"></textarea>
+          </div>
+          <div id="form-feedback" class="hidden text-sm p-3 rounded-lg"></div>
+          <button type="submit" id="form-submit-btn" class="w-full bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.98]">
+            <span>${buttonText}</span>
+            <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+          </button>
+        </form>
+      </div>
+    </section>
+    `;
+};
 
 const renderHeader = (data: PortfolioData) => `
     ${data.basicInfo.profileImage ? `<img src="${data.basicInfo.profileImage}" alt="Profile" class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-4 border-4 border-[var(--color-primary)] object-cover shadow-lg">` : ''}
@@ -100,7 +402,7 @@ const renderEducation = (data: PortfolioData) => data.education.length > 0 ? `<s
 const renderTestimonials = (data: PortfolioData) => data.testimonials.length > 0 ? `<section id="testimonials" class="section"><h2 class="section-title">Testimonials</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">${data.testimonials.map(t => `<div class="card text-center"><p class="italic">"${escape(t.text)}"</p><p class="font-bold mt-4 text-[var(--color-heading)]">- ${escape(t.author)}</p></div>`).join('')}</div></section>` : '';
 const renderCertifications = (data: PortfolioData) => data.certifications.length > 0 ? `<section id="certifications" class="section"><h2 class="section-title">Certifications</h2><div class="max-w-3xl mx-auto space-y-4">${data.certifications.map(c => `<div class="card flex justify-between items-center"><div class="flex-grow"><h3 class="font-bold text-[var(--color-heading)]">${escape(c.name)}</h3><p>${escape(c.authority)}</p></div><p class="text-sm text-gray-400">${escape(c.date)}</p></div>`).join('')}</div></section>` : '';
 const renderFooter = (data: PortfolioData) => `<footer class="text-center py-8 mt-12 border-t border-gray-200/20"><div class="flex justify-center gap-6 mb-4">${data.socialLinks.map(link => `<a href="${escape(link.url)}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 text-gray-500 hover:text-[var(--color-primary)]" title="${escape(link.platform)}">${socialIconMap[link.platform.toLowerCase()] || escape(link.platform)}</a>`).join('')}</div><p>&copy; ${new Date().getFullYear()} ${escape(data.basicInfo.name)}. All rights reserved.</p></footer>`;
-const renderAllSections = (data: PortfolioData) => [renderSkills(data), renderProjects(data), renderExperience(data), renderEducation(data), renderTestimonials(data), renderCertifications(data)].join('');
+const renderAllSections = (data: PortfolioData) => [renderSkills(data), renderProjects(data), renderExperience(data), renderEducation(data), renderTestimonials(data), renderCertifications(data), renderContactForm(data)].join('');
 
 // =================================================================================
 // LAYOUT-SPECIFIC HTML & CSS
@@ -108,11 +410,11 @@ const renderAllSections = (data: PortfolioData) => [renderSkills(data), renderPr
 const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
     'classic': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderAllSections(data)}</main>${renderFooter(data)}</div>`,
     'minimal-split': data => `<div class="md:flex min-h-screen"><aside class="md:w-1/3 p-8 bg-[var(--color-card)] flex flex-col justify-center text-center md:sticky md:top-0 md:h-screen">${renderHeader(data)}</aside><main class="md:w-2/3 p-4 md:p-8"><div class="max-w-4xl mx-auto">${renderAllSections(data)}${renderFooter(data)}</div></main></div>`,
-    'gallery-grid': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderSkills(data)}${renderProjects(data).replace('lg:grid-cols-3', 'lg:grid-cols-3') /* Ensure 3 cols */}${renderExperience(data)}${renderEducation(data)}${renderTestimonials(data)}${renderCertifications(data)}</main>${renderFooter(data)}</div>`,
-    'timeline': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderExperience(data)}${renderSkills(data)}${renderProjects(data)}${renderEducation(data)}${renderTestimonials(data)}${renderCertifications(data)}</main>${renderFooter(data)}</div>`,
+    'gallery-grid': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderSkills(data)}${renderProjects(data)}${renderExperience(data)}${renderEducation(data)}${renderTestimonials(data)}${renderCertifications(data)}${renderContactForm(data)}</main>${renderFooter(data)}</div>`,
+    'timeline': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderExperience(data)}${renderSkills(data)}${renderProjects(data)}${renderEducation(data)}${renderTestimonials(data)}${renderCertifications(data)}${renderContactForm(data)}</main>${renderFooter(data)}</div>`,
     'centered-card': data => `<div class="min-h-screen flex items-center justify-center p-4"><div class="container bg-[var(--color-card)] rounded-xl shadow-2xl p-8 md:p-12"><header class="text-center mb-12">${renderHeader(data)}</header><main>${renderAllSections(data)}</main>${renderFooter(data)}</div></div>`,
-    'interactive-blocks': data => `<div class="container mx-auto p-4 md:p-8"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><header class="lg:col-span-3 text-center card">${renderHeader(data)}</header><div class="lg:col-span-2 card">${renderProjects(data)}</div><div class="card">${renderSkills(data)}</div><div class="lg:col-span-3 card">${renderExperience(data)}</div></div>${renderFooter(data)}</div>`,
-    'booklet': data => `<div class="flex snap-x snap-mandatory h-screen w-screen overflow-x-auto"><section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center text-center p-8">${renderHeader(data)}</section>${[renderSkills, renderProjects, renderExperience, renderEducation].map(f => `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${f(data)}</section>`).join('')}</div>`,
+    'interactive-blocks': data => `<div class="container mx-auto p-4 md:p-8"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><header class="lg:col-span-3 text-center card">${renderHeader(data)}</header><div class="lg:col-span-2 card">${renderProjects(data)}</div><div class="card">${renderSkills(data)}</div><div class="lg:col-span-3 card">${renderExperience(data)}</div>${data.contactForm?.enabled ? `<div class="lg:col-span-3 card">${renderContactForm(data)}</div>` : ''}</div>${renderFooter(data)}</div>`,
+    'booklet': data => `<div class="flex snap-x snap-mandatory h-screen w-screen overflow-x-auto"><section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center text-center p-8">${renderHeader(data)}</section>${[renderSkills, renderProjects, renderExperience, renderEducation].map(f => `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${f(data)}</section>`).join('')}${data.contactForm?.enabled ? `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${renderContactForm(data)}</section>` : ''}</div>`,
     'material-resume': data => `<div class="container mx-auto p-4 md:p-8 max-w-4xl"><div class="card"><header class="text-center p-8">${renderHeader(data)}</header><main class="p-8">${renderAllSections(data)}</main>${renderFooter(data)}</div></div>`,
     'retro': data => {
         const c1 = "text-cyan-400";
@@ -120,8 +422,6 @@ const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
         const c3 = "text-amber-400";
         const c4 = "text-green-400";
         const val = (v: string) => `<span class="text-white">"${escape(v)}"</span>`;
-
-        const renderText = (content: string) => `<div class="pl-4 border-l border-gray-700">${escape(content).replace(/\n/g, '<br>')}</div>`;
 
         return `<div class="min-h-screen p-4 flex items-center justify-center"><div class="container border-2 border-[var(--color-primary)] p-6 font-mono max-w-5xl bg-[#0a0a0a] rounded-lg shadow-2xl shadow-[var(--color-primary)]/20 text-sm md:text-base">
         <pre class="whitespace-pre-wrap"><code><span class="${c1}">const</span> <span class="${c2}">portfolio</span> = {
@@ -134,7 +434,7 @@ const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
     ],
 };
 <span class="${c4}">// Welcome to my portfolio!</span>
-</code></pre>${renderFooter(data)}</div></div>`;
+</code></pre>${data.contactForm?.enabled ? renderContactForm(data) : ''}${renderFooter(data)}</div></div>`;
     }
 };
 
@@ -161,6 +461,81 @@ const generateHTMLContent = (data: PortfolioData) => {
 
 const generateLayoutSpecificCSS = (layoutId: string) => allLayoutCSS[layoutId] || '';
 
+const generateClientScript = (data: PortfolioData) => {
+  const hasContactForm = data.contactForm?.enabled;
+
+  if (!hasContactForm) return '';
+
+  let scriptContent = '';
+
+  if (hasContactForm) {
+    const formSettings = data.contactForm!;
+    const successMsg = formSettings.successMessage || 'Thank you! Your message has been sent successfully.';
+    scriptContent += `
+      // --- Contact Form Submission Handler ---
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('portfolio-contact-form');
+        if (form) {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const feedback = document.getElementById('form-feedback');
+            const submitBtn = document.getElementById('form-submit-btn');
+            const spinner = document.getElementById('form-spinner');
+            
+            if (!feedback || !submitBtn || !spinner) return;
+
+            feedback.className = 'hidden text-sm p-3 rounded-md';
+            feedback.textContent = '';
+            
+            submitBtn.disabled = true;
+            spinner.classList.remove('hidden');
+            
+            try {
+              const formData = new FormData(form);
+              const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                  'Accept': 'application/json'
+                }
+              });
+              
+              if (response.ok) {
+                feedback.textContent = ${JSON.stringify(successMsg)};
+                if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
+                  feedback.className = 'text-sm p-2 border border-[var(--color-primary)] text-[var(--color-primary)] bg-black';
+                } else {
+                  feedback.className = 'text-sm p-3 rounded-md bg-green-500/10 text-green-400 border border-green-500/20';
+                }
+                form.reset();
+              } else {
+                const resData = await response.json();
+                throw new Error(resData.message || 'Something went wrong. Please try again.');
+              }
+            } catch (err) {
+              feedback.textContent = err.message || 'Could not send message. Please check your network or credentials.';
+              if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
+                feedback.className = 'text-sm p-2 border border-[var(--color-secondary)] text-[var(--color-secondary)] bg-black';
+              } else {
+                feedback.className = 'text-sm p-3 rounded-md bg-red-500/10 text-red-400 border border-red-500/20';
+              }
+            } finally {
+              submitBtn.disabled = false;
+              spinner.classList.add('hidden');
+            }
+          });
+        }
+      });
+    `;
+  }
+
+  return `
+    <script id="portfolio-client-scripts">
+      ${scriptContent}
+    </script>
+  `;
+};
+
 // =================================================================================
 // FINAL HTML ASSEMBLY
 // =================================================================================
@@ -168,6 +543,13 @@ const generateLayoutSpecificCSS = (layoutId: string) => allLayoutCSS[layoutId] |
 export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => {
     const { siteSettings } = data;
     const themeMode = siteSettings.colorScheme === 'system' ? 'system' : siteSettings.colorScheme;
+    
+    const clientScript = generateClientScript(data);
+    const customJs = data.advancedCode?.customJs ? `
+        <script id="custom-injected-scripts">
+            ${data.advancedCode.customJs}
+        </script>
+    ` : '';
     
     return `
         <!DOCTYPE html>
@@ -186,10 +568,12 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
         </head>
         <body class="antialiased">
             ${generateHTMLContent(data)}
+            ${clientScript}
+            ${customJs}
         </body>
         </html>
     `;
-}
+};
 
 export const generatePreviewHtml = (data: PortfolioData, theme: Theme): string => {
     // For preview, we can inject a script to prevent links from working

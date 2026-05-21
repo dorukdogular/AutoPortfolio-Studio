@@ -33,6 +33,8 @@ const BuilderPage: React.FC = () => {
     themeId: 'indigo',
     layoutId: 'classic',
     siteSettings: { title: "Jane's Portfolio", description: 'My personal portfolio', favicon: '', fontFamily: 'Inter', colorScheme: 'light', fontSize: 'base', contentWidth: 'standard' },
+    contactForm: { enabled: false, provider: 'web3forms', apiKey: '', buttonText: 'Send Message', successMessage: 'Thank you! Your message has been sent successfully.' },
+    advancedCode: { customCss: '', customJs: '' }
   });
 
   const [themes, setThemes] = useState<Theme[]>(DEFAULT_THEMES);
