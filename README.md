@@ -9,7 +9,7 @@ Go from an idea to a production-ready, downloadable `.zip` file containing a bea
 ## Key Features
 
 -   **🤖 AI-Powered Content:** Let Gemini write your bio, suggest project ideas, and even recommend the best layout for your profile.
--   **🎨 Multiple Layouts & Themes:** Choose from 9+ professionally designed, fully responsive layouts and multiple color themes to match your personal brand. You can even generate unique themes with AI.
+-   **🎨 Multiple Layouts & Themes:** Choose from 11+ professionally designed, fully responsive layouts (including Neo-Brutalism, Glassmorphism Aurora, Bento Grid, and Sidebar Modern) and multiple premium color themes (like Neon Cyberpunk, Emerald Forest, Monochrome Slate) to match your personal brand. You can even generate unique themes with AI.
 -   **🔧 Deep Customization:** Fine-tune every aspect of your site, including fonts (from over 100 Google Fonts), colors, sizing, and which sections to show.
 -   **🖼️ Live Preview:** See your changes reflected instantly in a real-time preview of your website.
 -   **🚀 One-Click Export & Deploy:** Download your entire production-ready website as a clean, simple `.zip` file, and get simple instructions to deploy for free on services like GitHub Pages.

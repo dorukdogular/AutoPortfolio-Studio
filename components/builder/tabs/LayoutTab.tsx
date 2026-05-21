@@ -21,7 +21,11 @@ const LayoutPreview = ({ layoutId }: { layoutId: string }) => {
     'interactive-blocks': <div className={`${baseClasses} flex-wrap`}><div className="w-full h-[30%] bg-gray-500 r-s"></div><div className="w-[calc(50%-3px)] h-[65%] bg-gray-500 r-s"></div><div className="w-[calc(50%-3px)] h-[65%] bg-gray-500 r-s"></div></div>,
     'booklet': <div className={`${baseClasses} items-center justify-center gap-0.5`}><div className="w-1/2 h-full bg-gray-500 r-s"></div><div className="w-1/2 h-full bg-gray-500 r-s"></div></div>,
     'material-resume': <div className={`${baseClasses} flex-col gap-1`}><div className="h-1/4 bg-gray-500 r-s w-full"></div><div className="h-3/4 bg-gray-600 r-s w-full p-1"><div className="bg-gray-500 w-full h-full r-s"></div></div></div>,
-    'retro': <div className={`${baseClasses} border-2 border-gray-500`}><div className="w-full h-full border border-gray-500"></div></div>
+    'retro': <div className={`${baseClasses} border-2 border-gray-500`}><div className="w-full h-full border border-gray-500"></div></div>,
+    'neo-brutalism': <div className={`${baseClasses} bg-gray-300 p-1`}><div className="w-full h-full border-2 border-black bg-white shadow-[2px_2px_0_0_#000]"></div></div>,
+    'glassmorphism-aurora': <div className={`${baseClasses} relative overflow-hidden bg-gray-900 p-1`}><div className="absolute top-0 left-0 w-8 h-8 bg-purple-500 rounded-full blur-[6px]"></div><div className="absolute bottom-0 right-0 w-6 h-6 bg-cyan-500 rounded-full blur-[4px]"></div><div className="relative w-full h-full border border-white/20 bg-white/10 rounded-sm backdrop-blur-sm z-10"></div></div>,
+    'bento-grid': <div className={`${baseClasses} flex-wrap gap-[2px] p-1`}><div className="w-full h-[30%] bg-gray-500 rounded-sm"></div><div className="w-[60%] h-[60%] bg-gray-500 rounded-sm"></div><div className="flex-1 h-[60%] bg-gray-500 rounded-sm"></div></div>,
+    'sidebar-modern': <div className={`${baseClasses} gap-1 p-0`}><div className="w-1/3 h-full border-r border-gray-600 flex flex-col gap-1 p-1"><div className="w-full h-2 bg-gray-500 rounded-sm"></div></div><div className="w-2/3 h-full bg-gray-600/30 rounded-sm p-1"><div className="w-full h-full bg-gray-500 rounded-sm"></div></div></div>
   };
 
   return previews[layoutId] || null;

@@ -85,6 +85,69 @@ export const DEFAULT_THEMES: Theme[] = [
       heading: '#f9fafb',
     },
   },
+  {
+    id: 'cyberpunk',
+    name: 'Neon Cyberpunk',
+    isAIGenerated: false,
+    light: {
+      primary: '#ec4899', // pink-500
+      secondary: '#06b6d4', // cyan-500
+      background: '#fdf2f8',
+      card: '#ffffff',
+      text: '#374151',
+      heading: '#111827',
+    },
+    dark: {
+      primary: '#f472b6',
+      secondary: '#22d3ee',
+      background: '#0f0518',
+      card: '#1c0b2b',
+      text: '#e2e8f0',
+      heading: '#ffffff',
+    },
+  },
+  {
+    id: 'emerald',
+    name: 'Emerald Forest',
+    isAIGenerated: false,
+    light: {
+      primary: '#10b981',
+      secondary: '#34d399',
+      background: '#ecfdf5',
+      card: '#ffffff',
+      text: '#374151',
+      heading: '#064e3b',
+    },
+    dark: {
+      primary: '#34d399',
+      secondary: '#6ee7b7',
+      background: '#022c22',
+      card: '#064e3b',
+      text: '#d1fae5',
+      heading: '#ffffff',
+    },
+  },
+  {
+    id: 'slate',
+    name: 'Monochrome Slate',
+    isAIGenerated: false,
+    light: {
+      primary: '#475569',
+      secondary: '#64748b',
+      background: '#f8fafc',
+      card: '#ffffff',
+      text: '#334155',
+      heading: '#0f172a',
+    },
+    dark: {
+      primary: '#94a3b8',
+      secondary: '#cbd5e1',
+      background: '#0f172a',
+      card: '#1e293b',
+      text: '#e2e8f0',
+      heading: '#f8fafc',
+    },
+  },
 ];
 
 export const LAYOUTS: Layout[] = [
@@ -97,6 +160,10 @@ export const LAYOUTS: Layout[] = [
     { id: 'booklet', name: 'Booklet Style' },
     { id: 'material-resume', name: 'Material Resume' },
     { id: 'retro', name: 'Retro Terminal' },
+    { id: 'neo-brutalism', name: 'Neo-Brutalism' },
+    { id: 'glassmorphism-aurora', name: 'Glassmorphism Aurora' },
+    { id: 'bento-grid', name: 'Bento Grid' },
+    { id: 'sidebar-modern', name: 'Sidebar Modern' },
 ];
 
 export const GOOGLE_FONTS = [

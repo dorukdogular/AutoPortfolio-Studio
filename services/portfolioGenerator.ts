@@ -104,6 +104,68 @@ const renderContactForm = (data: PortfolioData) => {
 
     const layoutId = data.layoutId;
 
+    // ----------------- Neo-Brutalism Form -----------------
+    if (layoutId === 'neo-brutalism') {
+        return `
+        <section id="contact" class="mt-12 border-t-4 border-black pt-10 font-mono text-left">
+          <h2 class="text-3xl font-black uppercase text-black mb-8 tracking-wider">Contact Payload</h2>
+          <div class="border-4 border-black bg-[var(--color-card)] p-6 md:p-8 shadow-[8px_8px_0px_0px_#000000] max-w-xl">
+            <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-6">
+              ${hiddenInputs}
+              <div>
+                <label for="form-name" class="block text-sm font-bold text-black uppercase mb-1">Sender Name</label>
+                <input type="text" id="form-name" name="name" required class="w-full bg-white border-4 border-black rounded-none px-4 py-3 text-black font-bold focus:outline-none focus:bg-yellow-50 transition-colors text-sm">
+              </div>
+              <div>
+                <label for="form-email" class="block text-sm font-bold text-black uppercase mb-1">Return Email</label>
+                <input type="email" id="form-email" name="email" required class="w-full bg-white border-4 border-black rounded-none px-4 py-3 text-black font-bold focus:outline-none focus:bg-yellow-50 transition-colors text-sm">
+              </div>
+              <div>
+                <label for="form-message" class="block text-sm font-bold text-black uppercase mb-1">Transmission Message</label>
+                <textarea id="form-message" name="message" rows="4" required class="w-full bg-white border-4 border-black rounded-none px-4 py-3 text-black font-bold focus:outline-none focus:bg-yellow-50 transition-colors text-sm"></textarea>
+              </div>
+              <div id="form-feedback" class="hidden text-sm p-3 border-4 border-black font-bold"></div>
+              <button type="submit" id="form-submit-btn" class="w-full border-4 border-black bg-[var(--color-primary)] text-black hover:bg-[var(--color-secondary)] font-black py-4 px-6 rounded-none transition-all text-sm uppercase shadow-[4px_4px_0px_0px_#000000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000000] flex items-center justify-center gap-2">
+                <span>Execute Dispatch</span>
+                <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-4 border-black border-t-transparent rounded-full"></span>
+              </button>
+            </form>
+          </div>
+        </section>
+        `;
+    }
+
+    // ----------------- Glassmorphism Aurora Form -----------------
+    if (layoutId === 'glassmorphism-aurora') {
+        return `
+        <section id="contact" class="mt-16 border-t border-white/10 pt-12 text-center">
+          <h2 class="section-title">Get in Touch</h2>
+          <div class="max-w-xl mx-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-8 rounded-3xl text-left">
+            <form id="portfolio-contact-form" action="${actionUrl}" method="POST" class="space-y-6">
+              ${hiddenInputs}
+              <div>
+                <label for="form-name" class="block text-xs font-semibold text-white/70 uppercase tracking-widest mb-2">Your Name</label>
+                <input type="text" id="form-name" name="name" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[var(--color-primary)]/50 focus:bg-white/10 transition-all text-sm">
+              </div>
+              <div>
+                <label for="form-email" class="block text-xs font-semibold text-white/70 uppercase tracking-widest mb-2">Email Address</label>
+                <input type="email" id="form-email" name="email" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[var(--color-primary)]/50 focus:bg-white/10 transition-all text-sm">
+              </div>
+              <div>
+                <label for="form-message" class="block text-xs font-semibold text-white/70 uppercase tracking-widest mb-2">Message Payload</label>
+                <textarea id="form-message" name="message" rows="4" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-[var(--color-primary)]/50 focus:bg-white/10 transition-all text-sm"></textarea>
+              </div>
+              <div id="form-feedback" class="hidden text-sm p-3.5 rounded-2xl border border-white/10"></div>
+              <button type="submit" id="form-submit-btn" class="w-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-bold py-4 px-6 rounded-2xl hover:opacity-90 transition-opacity text-sm shadow-lg shadow-[var(--color-primary)]/20 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] duration-200">
+                <span>${buttonText}</span>
+                <span id="form-spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+              </button>
+            </form>
+          </div>
+        </section>
+        `;
+    }
+
     // ----------------- Retro (Terminal Style) Form -----------------
     if (layoutId === 'retro') {
         return `
@@ -391,8 +453,11 @@ const renderHeader = (data: PortfolioData) => `
     <h1 class="text-4xl md:text-6xl font-extrabold text-[var(--color-heading)]">${escape(data.basicInfo.name)}</h1>
     <p class="text-xl md:text-2xl text-[var(--color-secondary)] mt-2 font-medium">${escape(data.basicInfo.title)}</p>
     <p class="mt-4 max-w-3xl mx-auto text-lg">${escape(data.basicInfo.bio).replace(/\n/g, '<br>')}</p>
-    <a href="mailto:${escape(data.basicInfo.email)}" class="mt-6 inline-block bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-lg hover:bg-[var(--color-secondary)] transition-colors text-lg shadow-md">
-        Contact Me
+    <a href="mailto:${escape(data.basicInfo.email)}" class="mt-6 inline-flex items-center gap-2.5 bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-all text-base shadow-md hover:scale-[1.02] active:scale-[0.98] duration-200">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path>
+        </svg>
+        <span>${escape(data.basicInfo.email)}</span>
     </a>
 `;
 const renderSkills = (data: PortfolioData) => data.skills.length > 0 ? `<section id="skills" class="section"><h2 class="section-title">${escape(data.skillsTitle)}</h2><div class="flex flex-wrap justify-center gap-3">${data.skills.map(skill => `<span class="skill-badge">${escape(skill)}</span>`).join('')}</div></section>` : '';
@@ -416,6 +481,58 @@ const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
     'interactive-blocks': data => `<div class="container mx-auto p-4 md:p-8"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><header class="lg:col-span-3 text-center card">${renderHeader(data)}</header><div class="lg:col-span-2 card">${renderProjects(data)}</div><div class="card">${renderSkills(data)}</div><div class="lg:col-span-3 card">${renderExperience(data)}</div>${data.contactForm?.enabled ? `<div class="lg:col-span-3 card">${renderContactForm(data)}</div>` : ''}</div>${renderFooter(data)}</div>`,
     'booklet': data => `<div class="flex snap-x snap-mandatory h-screen w-screen overflow-x-auto"><section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center text-center p-8">${renderHeader(data)}</section>${[renderSkills, renderProjects, renderExperience, renderEducation].map(f => `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${f(data)}</section>`).join('')}${data.contactForm?.enabled ? `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${renderContactForm(data)}</section>` : ''}</div>`,
     'material-resume': data => `<div class="container mx-auto p-4 md:p-8 max-w-4xl"><div class="card"><header class="text-center p-8">${renderHeader(data)}</header><main class="p-8">${renderAllSections(data)}</main>${renderFooter(data)}</div></div>`,
+    'sidebar-modern': data => `
+    <div class="flex flex-col md:flex-row min-h-screen bg-[var(--color-background)]">
+      <aside class="w-full md:w-80 lg:w-[400px] bg-[var(--color-card)] border-r border-[var(--color-text)]/5 p-8 flex flex-col justify-between md:fixed md:h-screen md:overflow-y-auto z-10 shadow-2xl">
+        <div class="text-left">${renderHeader(data)}</div>
+        <div class="mt-12 hidden md:block">${renderFooter(data)}</div>
+      </aside>
+      <main class="w-full md:ml-80 lg:ml-[400px] p-6 md:p-12 lg:p-20 max-w-5xl mx-auto">
+        <div class="space-y-24">
+          ${renderSkills(data)}
+          ${renderProjects(data)}
+          ${renderExperience(data)}
+          ${renderEducation(data)}
+          ${renderTestimonials(data)}
+          ${renderCertifications(data)}
+          ${renderContactForm(data)}
+        </div>
+        <div class="md:hidden mt-12">${renderFooter(data)}</div>
+      </main>
+    </div>`,
+    'bento-grid': data => `
+    <div class="bento-theme min-h-screen p-4 md:p-8 bg-[var(--color-background)]">
+      <div class="max-w-7xl mx-auto">
+        <header class="mb-12 text-center bg-[var(--color-card)] p-12 rounded-[2rem] shadow-sm border border-[var(--color-text)]/5">${renderHeader(data)}</header>
+        <main class="grid grid-cols-1 md:grid-cols-12 auto-rows-max gap-6">
+          <div class="md:col-span-8 card !h-full flex flex-col">${renderProjects(data)}</div>
+          <div class="md:col-span-4 card !h-full relative overflow-hidden flex flex-col justify-center text-center">
+            <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 z-0"></div>
+            <div class="relative z-10">${renderSkills(data)}</div>
+          </div>
+          <div class="md:col-span-6 card !h-full">${renderExperience(data)}</div>
+          <div class="md:col-span-6 card !h-full flex flex-col justify-between">
+            ${renderEducation(data)}
+            ${data.certifications.length > 0 ? `<div class="mt-8 pt-8 border-t border-[var(--color-text)]/10">${renderCertifications(data)}</div>` : ''}
+          </div>
+          ${data.testimonials.length > 0 ? `<div class="md:col-span-12 card">${renderTestimonials(data)}</div>` : ''}
+          ${data.contactForm?.enabled ? `<div class="md:col-span-12 card p-8 md:p-16">${renderContactForm(data)}</div>` : ''}
+        </main>
+        ${renderFooter(data)}
+      </div>
+    </div>`,
+    'neo-brutalism': data => `<div class="neo-brutalism-theme min-h-screen p-4 md:p-8 max-w-5xl mx-auto"><header class="text-left py-12 border-b-4 border-black mb-12">${renderHeader(data)}</header><main class="space-y-12">${renderAllSections(data)}</main>${renderFooter(data)}</div>`,
+    'glassmorphism-aurora': data => `
+    <div class="aurora-theme min-h-screen relative overflow-hidden p-4 md:p-8 flex flex-col items-center justify-center">
+      <div class="aurora-blob aurora-blob-1"></div>
+      <div class="aurora-blob aurora-blob-2"></div>
+      <div class="aurora-blob aurora-blob-3"></div>
+      <div class="container relative z-10 max-w-4xl mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-6 md:p-12 my-8">
+        <header class="text-center py-8 mb-12">${renderHeader(data)}</header>
+        <main>${renderAllSections(data)}</main>
+        ${renderFooter(data)}
+      </div>
+    </div>`,
     'retro': data => {
         const c1 = "text-cyan-400";
         const c2 = "text-fuchsia-400";
@@ -434,7 +551,7 @@ const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
     ],
 };
 <span class="${c4}">// Welcome to my portfolio!</span>
-</code></pre>${data.contactForm?.enabled ? renderContactForm(data) : ''}${renderFooter(data)}</div></div>`;
+</div></pre>${data.contactForm?.enabled ? renderContactForm(data) : ''}${renderFooter(data)}</div></div>`;
     }
 };
 
@@ -450,6 +567,218 @@ const allLayoutCSS: Record<string, string> = {
             .md\\:flex { display: block; }
             .md\\:w-1\\/3, .md\\:w-2\\/3 { width: 100%; }
             .md\\:sticky { position: static; }
+        }
+    `,
+    'bento-grid': `
+        .bento-theme .card {
+            border-radius: 1.5rem !important;
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05) !important;
+            border: 1px solid var(--color-text);
+            border-opacity: 0.05 !important;
+        }
+        .bento-theme .section-title {
+            margin-bottom: 1.5rem;
+            text-align: left;
+            font-size: 1.75rem;
+        }
+        .bento-theme .section {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+    `,
+    'sidebar-modern': `
+        @media (min-width: 768px) {
+            body { background-color: var(--color-background); }
+            aside { border-right: 1px solid rgba(150, 150, 150, 0.1); }
+        }
+        .sidebar-modern header { text-align: left !important; }
+    `,
+    'neo-brutalism': `
+        body {
+            background-color: var(--color-background);
+            color: #000000;
+        }
+        .neo-brutalism-theme {
+            font-family: 'Space Mono', monospace;
+            color: #000000 !important;
+        }
+        .neo-brutalism-theme .card {
+            border: 4px solid #000000 !important;
+            background-color: var(--color-card) !important;
+            box-shadow: 8px 8px 0px 0px #000000 !important;
+            border-radius: 0px !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .neo-brutalism-theme .card:hover {
+            transform: translate(-4px, -4px) !important;
+            box-shadow: 12px 12px 0px 0px #000000 !important;
+        }
+        .neo-brutalism-theme .skill-badge {
+            border: 3px solid #000000 !important;
+            background-color: var(--color-primary) !important;
+            color: #000000 !important;
+            box-shadow: 3px 3px 0px 0px #000000 !important;
+            border-radius: 0px !important;
+            font-weight: 900 !important;
+            padding: 0.5rem 1rem !important;
+        }
+        .neo-brutalism-theme .section-title {
+            color: #000000 !important;
+            text-align: left !important;
+            font-size: 2.75rem !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            border-bottom: 6px solid #000000 !important;
+            padding-bottom: 0.5rem !important;
+            margin-bottom: 3rem !important;
+            display: inline-block !important;
+        }
+        .neo-brutalism-theme h1, 
+        .neo-brutalism-theme h2, 
+        .neo-brutalism-theme h3,
+        .neo-brutalism-theme h4 {
+            color: #000000 !important;
+            font-weight: 900 !important;
+        }
+        .neo-brutalism-theme a[href^="mailto:"] {
+            border: 4px solid #000000 !important;
+            background-color: var(--color-primary) !important;
+            color: #000000 !important;
+            border-radius: 0px !important;
+            box-shadow: 4px 4px 0px 0px #000000 !important;
+            font-family: 'Space Mono', monospace;
+            font-weight: 900 !important;
+        }
+        .neo-brutalism-theme a[href^="mailto:"]:hover {
+            background-color: var(--color-secondary) !important;
+            transform: translate(-2px, -2px) !important;
+            box-shadow: 6px 6px 0px 0px #000000 !important;
+        }
+        .neo-brutalism-theme footer {
+            border-top: 4px solid #000000 !important;
+            margin-top: 4rem !important;
+            padding-top: 2rem !important;
+        }
+    `,
+    'glassmorphism-aurora': `
+        .aurora-theme {
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            background: #090610 !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            overflow-x: hidden;
+        }
+        .aurora-theme h1, 
+        .aurora-theme h2, 
+        .aurora-theme h3,
+        .aurora-theme h4 {
+            color: #ffffff !important;
+        }
+        .aurora-blob {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            animation: floatBlob 22s infinite alternate ease-in-out;
+        }
+        .aurora-blob-1 {
+            background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            animation-duration: 25s;
+        }
+        .aurora-blob-2 {
+            background: radial-gradient(circle, var(--color-secondary) 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+        .aurora-blob-3 {
+            background: radial-gradient(circle, #f43f5e 0%, transparent 70%);
+            top: 40%;
+            left: 30%;
+            width: 350px;
+            height: 350px;
+            animation-duration: 20s;
+            animation-delay: -10s;
+        }
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(70px, -50px) scale(1.15); }
+            100% { transform: translate(-50px, 90px) scale(0.9); }
+        }
+        .aurora-theme .card {
+            background: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+            border-radius: 1.5rem !important;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .aurora-theme .card:hover {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            transform: translateY(-6px) scale(1.01) !important;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55) !important;
+        }
+        .aurora-theme .skill-badge {
+            background: rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border-radius: 9999px !important;
+            transition: all 0.3s ease !important;
+        }
+        .aurora-theme .skill-badge:hover {
+            background: var(--color-primary) !important;
+            border-color: var(--color-primary) !important;
+            transform: translateY(-2px);
+        }
+        .aurora-theme .section-title {
+            color: #ffffff !important;
+            font-size: 2.75rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.025em !important;
+            position: relative !important;
+            display: inline-block !important;
+            margin-bottom: 4rem !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+        .aurora-theme .section-title::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: -12px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 80px !important;
+            height: 4px !important;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important;
+            border-radius: 2px !important;
+        }
+        .aurora-theme a[href^="mailto:"] {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2) !important;
+            border-radius: 9999px !important;
+            color: #ffffff !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .aurora-theme a[href^="mailto:"]:hover {
+            transform: translateY(-2px) scale(1.05) !important;
+            box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.3) !important;
+            opacity: 0.95;
+        }
+        .aurora-theme footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
     `
 };
@@ -502,7 +831,11 @@ const generateClientScript = (data: PortfolioData) => {
               
               if (response.ok) {
                 feedback.textContent = ${JSON.stringify(successMsg)};
-                if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
+                if (document.querySelector('.neo-brutalism-theme')) {
+                  feedback.className = 'text-sm p-3 border-4 border-black bg-green-200 text-black font-bold';
+                } else if (document.querySelector('.aurora-theme')) {
+                  feedback.className = 'text-sm p-3.5 rounded-2xl bg-green-500/10 text-green-300 border border-green-500/20';
+                } else if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
                   feedback.className = 'text-sm p-2 border border-[var(--color-primary)] text-[var(--color-primary)] bg-black';
                 } else {
                   feedback.className = 'text-sm p-3 rounded-md bg-green-500/10 text-green-400 border border-green-500/20';
@@ -514,7 +847,11 @@ const generateClientScript = (data: PortfolioData) => {
               }
             } catch (err) {
               feedback.textContent = err.message || 'Could not send message. Please check your network or credentials.';
-              if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
+              if (document.querySelector('.neo-brutalism-theme')) {
+                feedback.className = 'text-sm p-3 border-4 border-black bg-red-200 text-black font-bold';
+              } else if (document.querySelector('.aurora-theme')) {
+                feedback.className = 'text-sm p-3.5 rounded-2xl bg-red-500/10 text-red-300 border border-red-500/20';
+              } else if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-secondary)]')) {
                 feedback.className = 'text-sm p-2 border border-[var(--color-secondary)] text-[var(--color-secondary)] bg-black';
               } else {
                 feedback.className = 'text-sm p-3 rounded-md bg-red-500/10 text-red-400 border border-red-500/20';
