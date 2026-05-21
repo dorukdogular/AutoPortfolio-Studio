@@ -8,7 +8,6 @@ Go from an idea to a production-ready, downloadable `.zip` file containing a bea
 
 ## Key Features
 
--   **🤖 AI-Powered Content:** Let Gemini write your bio, suggest project ideas, and even recommend the best layout for your profile.
 -   **🎨 Multiple Layouts & Themes:** Choose from 11+ professionally designed, fully responsive layouts (including Neo-Brutalism, Glassmorphism Aurora, Bento Grid, and Sidebar Modern) and multiple premium color themes (like Neon Cyberpunk, Emerald Forest, Monochrome Slate) to match your personal brand. You can even generate unique themes with AI.
 -   **🔧 Deep Customization:** Fine-tune every aspect of your site, including fonts (from over 100 Google Fonts), colors, sizing, and which sections to show.
 -   **🖼️ Live Preview:** See your changes reflected instantly in a real-time preview of your website.
@@ -22,33 +21,6 @@ Follow these instructions to get a local copy up and running for development and
 ### Prerequisites
 
 -   A modern web browser.
--   An API Key for the Google Gemini API.
-
-### Installation & Running
-
-This project is designed to run directly in the browser without a local build step.
-
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/dorukdogular/autoportfolio-studio.git
-    cd autoportfolio-studio
-    ```
-
-2.  **Set up environment variables:**
-    The application requires a Gemini API key to function. You must have a mechanism to provide this key as `process.env.API_KEY` in the execution environment where the app is hosted. The application code is already set up to read this variable.
-
-    **Warning:** For security, it is strongly recommended to host this application on a platform that supports environment variables, rather than hardcoding your API key directly into the client-side code.
-
-3.  **Run the application locally:**
-    You can serve the `index.html` file using any simple static server. A popular choice is `live-server`.
-    ```sh
-    # If you don't have live-server, install it globally
-    npm install -g live-server
-
-    # Run the server from the project root
-    live-server
-    ```
-    Your browser should open to the local address where the application is running. For the AI features to work, you would need to set up a local environment that can provide the API key.
 
 ## How to Use
 
