@@ -1,8 +1,6 @@
 # AutoPortfolio Studio
 
-![AutoPortfolio Studio Logo](https://raw.githubusercontent.com/dorukdogular/autoportfolio-studio/main/logo.svg) <!-- TODO: Replace with actual path to logo -->
-
-**AutoPortfolio Studio** is a modern, AI-powered web application that allows you to generate, customize, and download a complete personal portfolio website in minutes. No accounts, no databases, no hassle—everything runs in your browser.
+**AutoPortfolio Studio** is a modern web application that allows you to generate, customize, and download a complete personal portfolio website in minutes. No accounts, no databases, no hassle—everything runs in your browser.
 
 Go from an idea to a production-ready, downloadable `.zip` file containing a beautiful, responsive, and personalized portfolio.
 
