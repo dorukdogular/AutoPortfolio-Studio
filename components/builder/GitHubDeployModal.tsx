@@ -65,14 +65,24 @@ const GitHubDeployModal: React.FC<GitHubDeployModalProps> = ({ isOpen, onClose, 
                 </a>
               </li>
               <li>
-                <strong>Upload Your Files:</strong> Unzip the downloaded file. In your new GitHub repository, click on "Add file" &gt; "Upload files" and drag all the unzipped files (<code>index.html</code>, <code>style.css</code>, etc.) into the uploader.
+                <strong>Upload Your Files:</strong> Unzip the downloaded file. In your new GitHub repository, click on "Add file" &gt; "Upload files" and drag all the unzipped files and folders (including <code>index.html</code>, <code>.nojekyll</code>, and the <code>.github</code> folder) into the uploader, then commit the changes.
               </li>
               <li>
-                <strong>Enable GitHub Pages:</strong> In your repository, go to "Settings" &gt; "Pages". Under "Branch", select <code>main</code> and click "Save".
+                <strong>Enable GitHub Pages:</strong> In your repository, go to "Settings" &gt; "Pages".
+                <div className="mt-3 pl-4 border-l-2 border-indigo-500/40 space-y-3 text-sm text-gray-300">
+                  <div>
+                    <span className="font-semibold text-indigo-400">Method A: GitHub Actions (Recommended ⚡)</span>
+                    <p className="mt-0.5">Under "Build and deployment" &gt; "Source", select <strong>GitHub Actions</strong>. The pre-configured workflow in your upload will automatically build and publish your site!</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-indigo-400">Method B: Classic (Deploy from branch)</span>
+                    <p className="mt-0.5">Under "Build and deployment" &gt; "Source", select <strong>Deploy from a branch</strong>. Then under "Branch", select <code>main</code> (or <code>master</code>) and click "Save".</p>
+                  </div>
+                </div>
               </li>
                <li>
-                <strong>You're Live!</strong> Your site will be available at{' '}
-                <code>https://your-username.github.io/your-repo-name/</code> in a few minutes.
+                <strong>You're Live!</strong> Once deployment is complete, your site will be available at{' '}
+                <code>https://your-username.github.io/your-repo-name/</code>.
               </li>
             </ol>
           </motion.div>
