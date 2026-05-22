@@ -192,67 +192,167 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
         box-shadow: 0 4px 10px rgba(128, 90, 213, 0.2);
     }
 
-    /* PRINT ONLY QR CODE */
-    .print-qr-code {
+    /* PRINT ONLY CV CONTAINER STYLING */
+    .print-only-cv-container {
         display: none !important;
     }
 
     /* PRINT (PDF) STYLES */
     @media print {
-        html, body, .card, .skill-badge {
+        html, body {
+            background-color: white !important;
+            color: #1e293b !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         body {
-            background-color: white !important;
-            color: black !important;
-            font-size: 11pt !important;
-            margin: 1.5cm !important;
+            font-size: 10pt !important;
+            margin: 1.2cm !important;
         }
-        .no-print, #floating-actions, #contact, footer, button, .flex-shrink-0, #project-filters, #project-detail-modal {
+        
+        .digital-portfolio-layout, #floating-actions, .no-print, #contact, footer, button, .flex-shrink-0, #project-filters, #project-detail-modal {
             display: none !important;
         }
-        .card {
-            box-shadow: none !important;
-            border: 1px solid #e2e8f0 !important;
+        
+        .print-only-cv-container {
+            display: block !important;
             background-color: white !important;
-            color: black !important;
-            transform: none !important;
-            page-break-inside: avoid;
-            margin-bottom: 1rem !important;
-        }
-        .skill-badge {
-            border: 1px solid #cbd5e1 !important;
-            background-color: #f1f5f9 !important;
-            color: black !important;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            color: black !important;
-            page-break-after: avoid;
-        }
-        .container {
-            max-width: 100% !important;
+            color: #1e293b !important; /* Slate 800 */
             padding: 0 !important;
             margin: 0 !important;
+            font-size: 10pt !important;
+            line-height: 1.5 !important;
         }
-        .print-qr-code {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            position: absolute !important;
-            top: 1.5cm !important;
-            right: 1.5cm !important;
-            text-align: center !important;
+        
+        .cv-header {
+            border-bottom: 2px solid #6366f1; /* Indigo 500 */
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
-        .print-qr-code img {
-            width: 80px !important;
-            height: 80px !important;
+        .cv-name {
+            font-size: 24pt !important;
+            font-weight: 800 !important;
+            color: #0f172a !important; /* Slate 900 */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 0.15rem 0 !important;
+            line-height: 1.1 !important;
         }
-        .print-qr-code span {
-            font-size: 8pt !important;
-            color: #64748b !important;
-            margin-top: 4px !important;
+        .cv-title {
+            font-size: 13pt !important;
+            font-weight: 600 !important;
+            color: #4f46e5 !important; /* Indigo 600 */
+            letter-spacing: 0.5px;
+            margin: 0 0 0.75rem 0 !important;
+            line-height: 1.2 !important;
+        }
+        .cv-contact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            font-size: 9pt !important;
+            color: #475569 !important; /* Slate 600 */
+            margin-top: 0.5rem;
+        }
+        .cv-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .cv-contact-item a {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+        .cv-section {
+            margin-top: 1.5rem;
+            page-break-inside: avoid;
+        }
+        .cv-section-title {
+            font-size: 11pt !important;
+            font-weight: 700 !important;
+            color: #0f172a !important; /* Slate 900 */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 1.5px solid #e2e8f0; /* Slate 200 */
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.85rem;
+        }
+        .cv-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+        .cv-item {
+            page-break-inside: avoid;
+        }
+        .cv-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.2rem;
+        }
+        .cv-item-title {
+            font-size: 10.5pt !important;
+            font-weight: 700 !important;
+            color: #1e293b !important; /* Slate 800 */
+        }
+        .cv-item-subtitle {
+            font-size: 10pt !important;
+            font-weight: 600 !important;
+            color: #4f46e5 !important; /* Indigo 600 */
+        }
+        .cv-item-date {
+            font-size: 9pt !important;
+            font-weight: 500 !important;
+            color: #64748b !important; /* Slate 500 */
+        }
+        .cv-item-desc {
+            font-size: 9.5pt !important;
+            color: #475569 !important; /* Slate 600 */
+            line-height: 1.5 !important;
+        }
+        .cv-skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .cv-skill-tag {
+            background-color: #f1f5f9 !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #334155 !important;
+            padding: 0.15rem 0.5rem !important;
+            border-radius: 4px !important;
+            font-size: 8.5pt !important;
+            font-weight: 500 !important;
+        }
+        .cv-projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+        }
+        .cv-project-card {
+            border: 1px solid #e2e8f0 !important;
+            padding: 0.75rem !important;
+            border-radius: 6px !important;
+            background-color: #f8fafc !important;
+            page-break-inside: avoid;
+        }
+        .cv-project-title {
+            font-size: 10pt !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            margin: 0 !important;
+        }
+        .cv-project-link {
+            font-size: 8.5pt !important;
+            color: #4f46e5 !important;
+            text-decoration: underline !important;
+        }
+        .cv-project-desc {
+            font-size: 8.5pt !important;
+            color: #475569 !important;
+            margin-top: 0.25rem !important;
+            line-height: 1.4 !important;
         }
     }
     
@@ -710,6 +810,207 @@ const renderTestimonials = (data: PortfolioData) => data.testimonials.length > 0
 const renderCertifications = (data: PortfolioData) => data.certifications.length > 0 ? `<section id="certifications" class="section"><h2 class="section-title">Certifications</h2><div class="max-w-3xl mx-auto space-y-4">${data.certifications.map(c => `<div class="card flex justify-between items-center"><div class="flex-grow"><h3 class="font-bold text-[var(--color-heading)]">${escape(c.name)}</h3><p>${escape(c.authority)}</p></div><p class="text-sm text-gray-400">${escape(c.date)}</p></div>`).join('')}</div></section>` : '';
 const renderFooter = (data: PortfolioData) => `<footer class="text-center py-8 mt-12 border-t border-gray-200/20"><div class="flex justify-center gap-6 mb-4">${data.socialLinks.map(link => `<a href="${escape(link.url)}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 text-gray-500 hover:text-[var(--color-primary)]" title="${escape(link.platform)}">${socialIconMap[link.platform.toLowerCase()] || escape(link.platform)}</a>`).join('')}</div><p>&copy; ${new Date().getFullYear()} ${escape(data.basicInfo.name)}. All rights reserved.</p><p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.5rem; letter-spacing: 0.05em;">Generated with <a href="https://github.com/dorukdogular/AutoPortfolio-Studio" target="_blank" rel="noopener noreferrer" style="font-weight: 600; color: var(--color-primary); text-decoration: underline;">AutoPortfolio Studio</a> by <span style="font-weight: 600;">Doruk Doğular</span></p></footer>`;
 const renderAllSections = (data: PortfolioData) => [renderSkills(data), renderProjects(data), renderExperience(data), renderEducation(data), renderTestimonials(data), renderCertifications(data), renderContactForm(data)].join('');
+
+const renderPrintOnlyCV = (data: PortfolioData) => {
+    const { basicInfo, skills, projects, experience, education, certifications, socialLinks, siteSettings } = data;
+    
+    // Contact list items
+    const contactItems: string[] = [];
+    if (basicInfo.email) {
+        contactItems.push(`
+            <div class="cv-contact-item">
+                <svg style="width: 14px; height: 14px; color: #4f46e5; display: inline-block; vertical-align: middle; margin-right: 4px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path>
+                </svg>
+                <span>${escape(basicInfo.email)}</span>
+            </div>
+        `);
+    }
+    
+    const portfolioUrl = siteSettings.portfolioUrl || '';
+    if (portfolioUrl) {
+        contactItems.push(`
+            <div class="cv-contact-item">
+                <svg style="width: 14px; height: 14px; color: #4f46e5; display: inline-block; vertical-align: middle; margin-right: 4px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253"></path>
+                </svg>
+                <a href="${escape(portfolioUrl)}" target="_blank" style="color: inherit; text-decoration: none;">${escape(portfolioUrl.replace(/^https?:\/\//, ''))}</a>
+            </div>
+        `);
+    }
+
+    socialLinks.forEach(link => {
+        const platformName = escape(link.platform);
+        const displayUrl = escape(link.url.replace(/^https?:\/\/(www\.)?/, ''));
+        contactItems.push(`
+            <div class="cv-contact-item">
+                <span style="font-weight: 700; font-size: 8pt; color: #4f46e5; text-transform: uppercase; margin-right: 4px;">${platformName}:</span>
+                <a href="${escape(link.url)}" target="_blank" style="color: inherit; text-decoration: none;">${displayUrl}</a>
+            </div>
+        `);
+    });
+
+    const contactSection = contactItems.length > 0 
+        ? `<div class="cv-contact">${contactItems.join('')}</div>`
+        : '';
+
+    const summarySection = basicInfo.bio
+        ? `
+        <div class="cv-section">
+            <h2 class="cv-section-title">Professional Summary</h2>
+            <p class="cv-item-desc" style="font-size: 10pt !important; line-height: 1.6; color: #334155;">
+                ${escape(basicInfo.bio).replace(/\n/g, '<br>')}
+            </p>
+        </div>
+        `
+        : '';
+
+    const experienceItems = experience.map(exp => `
+        <div class="cv-item">
+            <div class="cv-item-header">
+                <div>
+                    <span class="cv-item-title">${escape(exp.role)}</span>
+                    <span style="color: #cbd5e1; margin: 0 0.5rem;">|</span>
+                    <span class="cv-item-subtitle">${escape(exp.company)}</span>
+                </div>
+                <span class="cv-item-date">${escape(exp.period)}</span>
+            </div>
+            <p class="cv-item-desc" style="margin-top: 0.35rem;">
+                ${escape(exp.description).replace(/\n/g, '<br>')}
+            </p>
+        </div>
+    `).join('');
+
+    const experienceSection = experience.length > 0
+        ? `
+        <div class="cv-section">
+            <h2 class="cv-section-title">Work Experience</h2>
+            <div class="cv-grid">
+                ${experienceItems}
+            </div>
+        </div>
+        `
+        : '';
+
+    const projectItems = projects.map(p => `
+        <div class="cv-project-card">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <h3 class="cv-project-title">${escape(p.title)}</h3>
+                ${p.link ? `<a href="${escape(p.link)}" class="cv-project-link" target="_blank">View Project</a>` : ''}
+            </div>
+            <p class="cv-project-desc">${escape(p.description).replace(/\n/g, '<br>')}</p>
+        </div>
+    `).join('');
+
+    const projectsSection = projects.length > 0
+        ? `
+        <div class="cv-section">
+            <h2 class="cv-section-title">Key Projects</h2>
+            <div class="cv-projects-grid">
+                ${projectItems}
+            </div>
+        </div>
+        `
+        : '';
+    
+    const skillsHtml = skills.length > 0
+        ? `
+        <div>
+            <h2 class="cv-section-title" style="margin-top: 0;">Skills & Competencies</h2>
+            <div class="cv-skills-list">
+                ${skills.map(s => `<span class="cv-skill-tag">${escape(s)}</span>`).join('')}
+            </div>
+        </div>
+        `
+        : '';
+
+    const educationHtml = education.length > 0
+        ? `
+        <div style="margin-bottom: 1.5rem;">
+            <h2 class="cv-section-title" style="margin-top: 0;">Education</h2>
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                ${education.map(edu => `
+                    <div style="page-break-inside: avoid;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                            <span style="font-weight: 700; color: #1e293b; font-size: 10pt;">${escape(edu.degree)}</span>
+                            <span style="font-size: 9pt; color: #64748b; font-weight: 500;">${escape(edu.period)}</span>
+                        </div>
+                        <div style="color: #4f46e5; font-weight: 600; font-size: 9.5pt; margin-top: 0.1rem;">${escape(edu.institution)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        `
+        : '';
+
+    const certificationsHtml = certifications.length > 0
+        ? `
+        <div>
+            <h2 class="cv-section-title" style="margin-top: 0; border-bottom: 1px solid #cbd5e1; padding-bottom: 0.35rem;">Certifications</h2>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                ${certifications.map(c => `
+                    <div style="page-break-inside: avoid; display: flex; justify-content: space-between; align-items: baseline;">
+                        <div style="flex-grow: 1;">
+                            <span style="font-weight: 700; color: #1e293b; font-size: 9.5pt;">${escape(c.name)}</span>
+                            <span style="color: #64748b; font-size: 9pt;"> - ${escape(c.authority)}</span>
+                        </div>
+                        <span style="font-size: 9pt; color: #64748b; font-weight: 500; flex-shrink: 0; margin-left: 0.5rem;">${escape(c.date)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        `
+        : '';
+
+    const eduAndCertsHtml = (education.length > 0 || certifications.length > 0)
+        ? `
+        <div>
+            ${educationHtml}
+            ${certificationsHtml}
+        </div>
+        `
+        : '';
+
+    const bottomGridSection = (skills.length > 0 || education.length > 0 || certifications.length > 0)
+        ? `
+        <div class="cv-section" style="page-break-inside: avoid;">
+            <div style="display: grid; grid-template-columns: 4fr 5fr; gap: 2rem;">
+                ${skillsHtml || '<div></div>'}
+                ${eduAndCertsHtml || '<div></div>'}
+            </div>
+        </div>
+        `
+        : '';
+
+    const qrCodeHtml = portfolioUrl
+        ? `
+        <div class="cv-qr-code" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(portfolioUrl)}" alt="QR Code" style="width: 70px; height: 70px; border: 1px solid #e2e8f0; padding: 2px; border-radius: 4px;">
+            <span style="font-size: 7.5pt; color: #64748b; margin-top: 4px;">Scan to view online</span>
+        </div>
+        `
+        : '';
+
+    return `
+        <div style="max-width: 800px; margin: 0 auto; padding: 20px; position: relative;">
+            <!-- Header -->
+            <div class="cv-header" style="position: relative; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex-grow: 1; text-align: left; padding-right: 20px;">
+                    <h1 class="cv-name">${escape(basicInfo.name)}</h1>
+                    <p class="cv-title">${escape(basicInfo.title)}</p>
+                    ${contactSection}
+                </div>
+                ${qrCodeHtml}
+            </div>
+
+            <!-- Body -->
+            ${summarySection}
+            ${experienceSection}
+            ${projectsSection}
+            ${bottomGridSection}
+        </div>
+    `;
+};
 
 // =================================================================================
 // LAYOUT-SPECIFIC HTML & CSS
@@ -1492,7 +1793,13 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
                 <span>Scan to view online</span>
             </div>
             ` : ''}
-            ${generateHTMLContent(data)}
+            <div class="digital-portfolio-layout">
+                ${generateHTMLContent(data)}
+            </div>
+            
+            <div class="print-only-cv-container">
+                ${renderPrintOnlyCV(data)}
+            </div>
             
             <!-- Floating Premium Glassmorphic Control Dock -->
             <div class="fixed bottom-6 right-6 flex items-center gap-2 z-50 no-print" id="floating-actions">
