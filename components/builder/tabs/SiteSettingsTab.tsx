@@ -115,7 +115,7 @@ const SiteSettingsTab: React.FC<SiteSettingsTabProps> = ({ data, setData }) => {
                 <h3 className="text-lg font-semibold mb-2">Meta Information</h3>
                 <Input label="Site Title" name="title" value={data.siteSettings.title} onChange={handleChange} placeholder="e.g., Jane Doe's Portfolio" />
                 <Input label="Site Description" name="description" value={data.siteSettings.description} onChange={handleChange} placeholder="A short description for search engines" />
-                <Input label="Live Portfolio URL (For Print CV QR Code)" name="portfolioUrl" value={data.siteSettings.portfolioUrl || ''} onChange={handleChange} placeholder="e.g., https://janedoe.github.io" />
+                <Input label="Live Portfolio URL" name="portfolioUrl" value={data.siteSettings.portfolioUrl || ''} onChange={handleChange} placeholder="e.g., https://janedoe.github.io" />
                  <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-300 mb-1">Favicon</label>
                       <input type="file" accept="image/png, image/x-icon, image/svg+xml" onChange={handleFaviconChange} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"/>

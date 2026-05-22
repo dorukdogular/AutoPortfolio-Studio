@@ -982,15 +982,6 @@ const renderPrintOnlyCV = (data: PortfolioData) => {
         `
         : '';
 
-    const qrCodeHtml = portfolioUrl
-        ? `
-        <div class="cv-qr-code" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(portfolioUrl)}" alt="QR Code" style="width: 70px; height: 70px; border: 1px solid #e2e8f0; padding: 2px; border-radius: 4px;">
-            <span style="font-size: 7.5pt; color: #64748b; margin-top: 4px;">Scan to view online</span>
-        </div>
-        `
-        : '';
-
     return `
         <div style="max-width: 800px; margin: 0 auto; padding: 20px; position: relative;">
             <!-- Header -->
@@ -1000,7 +991,6 @@ const renderPrintOnlyCV = (data: PortfolioData) => {
                     <p class="cv-title">${escape(basicInfo.title)}</p>
                     ${contactSection}
                 </div>
-                ${qrCodeHtml}
             </div>
 
             <!-- Body -->
@@ -1786,12 +1776,6 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
             ` : ''}
             ${siteSettings.backdropEffect === 'dots' ? `
             <div class="dot-matrix no-print" style="position: fixed; inset: 0; z-index: -10; pointer-events: none; opacity: 0.7;"></div>
-            ` : ''}
-            ${siteSettings.portfolioUrl ? `
-            <div class="print-qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(siteSettings.portfolioUrl)}" alt="QR Code">
-                <span>Scan to view online</span>
-            </div>
             ` : ''}
             <div class="digital-portfolio-layout">
                 ${generateHTMLContent(data)}
