@@ -137,6 +137,28 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
         border-color: var(--color-primary);
     }
 
+    /* PROJECT CARD FILTER ANIMATIONS */
+    .project-card {
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .project-card.filtered-out {
+        opacity: 0 !important;
+        transform: scale(0.9) !important;
+        position: absolute !important;
+        width: 0 !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* PRINT ONLY QR CODE */
+    .print-qr-code {
+        display: none !important;
+    }
+
     /* PRINT (PDF) STYLES */
     @media print {
         body {
@@ -145,7 +167,7 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
             font-size: 11pt !important;
             margin: 1.5cm !important;
         }
-        .no-print, #floating-actions, #contact, footer, button, .flex-shrink-0 {
+        .no-print, #floating-actions, #contact, footer, button, .flex-shrink-0, #project-filters {
             display: none !important;
         }
         .card {
@@ -170,6 +192,25 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
             max-width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
+        }
+        .print-qr-code {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: absolute !important;
+            top: 1.5cm !important;
+            right: 1.5cm !important;
+            text-align: center !important;
+        }
+        .print-qr-code img {
+            width: 80px !important;
+            height: 80px !important;
+        }
+        .print-qr-code span {
+            font-size: 8pt !important;
+            color: #64748b !important;
+            margin-top: 4px !important;
         }
     }
     
@@ -560,7 +601,67 @@ const renderHeader = (data: PortfolioData) => `
     </a>
 `;
 const renderSkills = (data: PortfolioData) => data.skills.length > 0 ? `<section id="skills" class="section"><h2 class="section-title">${escape(data.skillsTitle)}</h2><div class="flex flex-wrap justify-center gap-3">${data.skills.map(skill => `<span class="skill-badge">${escape(skill)}</span>`).join('')}</div></section>` : '';
-const renderProjects = (data: PortfolioData) => data.projects.length > 0 ? `<section id="projects" class="section"><h2 class="section-title">${escape(data.projectsTitle)}</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">${data.projects.map(p => `<div class="card flex flex-col">${p.image ? `<img src="${escape(p.image)}" alt="${escape(p.title)}" class="w-full h-48 object-cover rounded-t-lg mb-4">` : ''}<div class="flex-grow"><h3 class="text-xl font-bold mb-2 text-[var(--color-heading)]">${escape(p.title)}</h3><p class="text-base mb-4">${escape(p.description).replace(/\n/g, '<br>')}</p></div>${p.link ? `<a href="${escape(p.link)}" target="_blank" rel="noopener noreferrer" class="font-semibold mt-auto self-start">View Project &rarr;</a>` : ''}</div>`).join('')}</div></section>` : '';
+const extractTags = (text: string): string[] => {
+    const tags: string[] = [];
+    const hashRegex = /#(\w+)/g;
+    const bracketRegex = /\[([^\]]+)\]/g;
+    
+    let match;
+    while ((match = hashRegex.exec(text)) !== null) {
+        tags.push(match[1]);
+    }
+    while ((match = bracketRegex.exec(text)) !== null) {
+        tags.push(match[1]);
+    }
+    
+    return Array.from(new Set(tags.map(t => t.trim()))).filter(t => t.length > 0);
+};
+
+const renderProjects = (data: PortfolioData) => {
+    if (data.projects.length === 0) return '';
+    
+    const enableFilters = data.siteSettings.enableProjectFilters ?? true;
+    
+    let allTagsSet = new Set<string>();
+    const projectsWithTags = data.projects.map(p => {
+        const tags = extractTags(p.description);
+        tags.forEach(t => allTagsSet.add(t));
+        return { ...p, tags };
+    });
+    
+    const allTags = Array.from(allTagsSet);
+    
+    const filterButtonsHtml = (enableFilters && allTags.length > 0) ? `
+    <div class="flex flex-wrap justify-center gap-2 mb-8 no-print" id="project-filters">
+        <button class="project-filter-btn active px-4 py-1.5 rounded-full text-xs font-semibold border border-[var(--color-primary)] bg-[var(--color-primary)] text-white transition-all hover:scale-105 active:scale-95 duration-200" data-filter="all">All</button>
+        ${allTags.map(tag => `
+            <button class="project-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold border border-gray-300 dark:border-white/10 text-[var(--color-text)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all hover:scale-105 active:scale-95 duration-200" data-filter="${escape(tag.toLowerCase())}">${escape(tag)}</button>
+        `).join('')}
+    </div>
+    ` : '';
+
+    return `
+    <section id="projects" class="section">
+        <h2 class="section-title">${escape(data.projectsTitle)}</h2>
+        ${filterButtonsHtml}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+            ${projectsWithTags.map(p => {
+                const tagsAttr = p.tags.map(t => t.toLowerCase()).join(',');
+                return `
+                <div class="card flex flex-col project-card transition-all duration-300" data-tags="${escape(tagsAttr)}">
+                    ${p.image ? `<img src="${escape(p.image)}" alt="${escape(p.title)}" class="w-full h-48 object-cover rounded-t-lg mb-4">` : ''}
+                    <div class="flex-grow">
+                        <h3 class="text-xl font-bold mb-2 text-[var(--color-heading)]">${escape(p.title)}</h3>
+                        <p class="text-base mb-4">${escape(p.description).replace(/\n/g, '<br>')}</p>
+                    </div>
+                    ${p.link ? `<a href="${escape(p.link)}" target="_blank" rel="noopener noreferrer" class="font-semibold mt-auto self-start">View Project &rarr;</a>` : ''}
+                </div>
+                `;
+            }).join('')}
+        </div>
+    </section>
+    `;
+};
 const renderExperience = (data: PortfolioData) => data.experience.length > 0 ? `<section id="experience" class="section"><h2 class="section-title">Experience</h2><div class="max-w-3xl mx-auto space-y-8 relative before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-[var(--color-primary)]/30"><div class="pl-10 relative">${data.experience.map(exp => `<div class="mb-8"><div class="absolute -left-1.5 top-1 h-5 w-5 rounded-full bg-[var(--color-primary)] border-4 border-[var(--color-background)]"></div><h3 class="text-xl font-bold text-[var(--color-heading)]">${escape(exp.role)}</h3><p class="text-lg font-medium text-[var(--color-secondary)]">${escape(exp.company)}</p><p class="text-sm text-gray-400 mb-2">${escape(exp.period)}</p><p>${escape(exp.description).replace(/\n/g, '<br>')}</p></div>`).join('')}</div></div></section>` : '';
 const renderEducation = (data: PortfolioData) => data.education.length > 0 ? `<section id="education" class="section"><h2 class="section-title">Education</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">${data.education.map(edu => `<div class="card"><h3 class="text-xl font-bold text-[var(--color-heading)]">${escape(edu.degree)}</h3><p class="text-lg font-medium">${escape(edu.institution)}</p><p class="text-sm text-gray-400">${escape(edu.period)}</p></div>`).join('')}</div></section>` : '';
 const renderTestimonials = (data: PortfolioData) => data.testimonials.length > 0 ? `<section id="testimonials" class="section"><h2 class="section-title">Testimonials</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">${data.testimonials.map(t => `<div class="card text-center"><p class="italic">"${escape(t.text)}"</p><p class="font-bold mt-4 text-[var(--color-heading)]">- ${escape(t.author)}</p></div>`).join('')}</div></section>` : '';
@@ -1075,6 +1176,44 @@ const generateClientScript = (data: PortfolioData) => {
       }
     });
 
+    // --- Project Filtering ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterContainer = document.getElementById('project-filters');
+      if (filterContainer) {
+        const filterBtns = filterContainer.querySelectorAll('.project-filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+        
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterBtns.forEach(b => {
+              b.classList.remove('active', 'bg-[var(--color-primary)]', 'text-white', 'border-[var(--color-primary)]');
+              b.classList.add('border-gray-300', 'dark:border-white/10', 'text-[var(--color-text)]');
+            });
+            
+            btn.classList.add('active');
+            btn.classList.remove('border-gray-300', 'dark:border-white/10', 'text-[var(--color-text)]');
+            btn.classList.add('bg-[var(--color-primary)]', 'text-white', 'border-[var(--color-primary)]');
+            
+            const filter = btn.getAttribute('data-filter');
+            
+            projectCards.forEach(card => {
+              if (filter === 'all') {
+                card.classList.remove('filtered-out');
+              } else {
+                const tags = card.getAttribute('data-tags') || '';
+                const tagList = tags.split(',');
+                if (tagList.includes(filter)) {
+                  card.classList.remove('filtered-out');
+                } else {
+                  card.classList.add('filtered-out');
+                }
+              }
+            });
+          });
+        });
+      }
+    });
+
     ${contactFormJs}
   `;
 
@@ -1100,6 +1239,32 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
         </script>
     ` : '';
     
+    const ogTitle = siteSettings.ogTitle || siteSettings.title;
+    const ogDescription = siteSettings.ogDescription || siteSettings.description;
+    const ogImage = siteSettings.ogImage || data.basicInfo.profileImage;
+    const ogUrl = siteSettings.portfolioUrl || '';
+
+    let analyticsHtml = '';
+    if (siteSettings.analyticsId) {
+        if (siteSettings.analyticsProvider === 'umami') {
+            analyticsHtml = `
+            <!-- Umami Analytics -->
+            <script defer src="https://cloud.umami.is/script.js" data-website-id="${escape(siteSettings.analyticsId)}"></script>
+            `;
+        } else {
+            analyticsHtml = `
+            <!-- Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=${escape(siteSettings.analyticsId)}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${escape(siteSettings.analyticsId)}');
+            </script>
+            `;
+        }
+    }
+
     return `
         <!DOCTYPE html>
         <html lang="en" class="${themeMode}">
@@ -1111,15 +1276,16 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
             
             <!-- Open Graph / Facebook -->
             <meta property="og:type" content="website">
-            <meta property="og:title" content="${escape(siteSettings.title)}">
-            <meta property="og:description" content="${escape(siteSettings.description)}">
-            ${data.basicInfo.profileImage ? `<meta property="og:image" content="${data.basicInfo.profileImage}">` : ''}
+            <meta property="og:title" content="${escape(ogTitle)}">
+            <meta property="og:description" content="${escape(ogDescription)}">
+            ${ogImage ? `<meta property="og:image" content="${escape(ogImage)}">` : ''}
+            ${ogUrl ? `<meta property="og:url" content="${escape(ogUrl)}">` : ''}
             
             <!-- Twitter -->
             <meta property="twitter:card" content="summary_large_image">
-            <meta property="twitter:title" content="${escape(siteSettings.title)}">
-            <meta property="twitter:description" content="${escape(siteSettings.description)}">
-            ${data.basicInfo.profileImage ? `<meta property="twitter:image" content="${data.basicInfo.profileImage}">` : ''}
+            <meta property="twitter:title" content="${escape(ogTitle)}">
+            <meta property="twitter:description" content="${escape(ogDescription)}">
+            ${ogImage ? `<meta property="twitter:image" content="${escape(ogImage)}">` : ''}
             
             ${siteSettings.favicon ? `<link rel="icon" href="${siteSettings.favicon}">` : ''}
             <script src="https://cdn.tailwindcss.com"></script>
@@ -1127,8 +1293,15 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link href="https://fonts.googleapis.com/css2?family=${siteSettings.fontFamily.replace(/ /g, '+')}:wght@400;500;700;900&display=swap" rel="stylesheet">
             ${generateCSS(data, theme)}
+            ${analyticsHtml}
         </head>
         <body class="antialiased">
+            ${siteSettings.portfolioUrl ? `
+            <div class="print-qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(siteSettings.portfolioUrl)}" alt="QR Code">
+                <span>Scan to view online</span>
+            </div>
+            ` : ''}
             ${generateHTMLContent(data)}
             
             <!-- Floating Glassmorphic Action Panel -->
@@ -1140,7 +1313,7 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
                     </svg>
                 </button>
                 <!-- Theme Switcher Button -->
-                <button id="theme-toggle-btn" title="Toggle Theme" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 backdrop-blur-md border border-gray-200/20 dark:border-white/10 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200">
+                <button id="theme-toggle-btn" title="Toggle Theme" style="display: ${(siteSettings.enableThemeToggle ?? true) ? 'flex' : 'none'};" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 backdrop-blur-md border border-gray-200/20 dark:border-white/10 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200">
                     <svg id="theme-sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M4.95 4.95l1.58 1.58m10.95 10.95l1.58 1.58M3 12h2.25m13.5 0H21m-2.234-7.016l-1.58 1.58m-10.95 10.95l-1.58 1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path>
                     </svg>

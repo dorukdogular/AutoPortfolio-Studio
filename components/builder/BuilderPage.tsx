@@ -33,7 +33,23 @@ const BuilderPage: React.FC = () => {
     certifications: [],
     themeId: 'indigo',
     layoutId: 'classic',
-    siteSettings: { title: "Jane's Portfolio", description: 'My personal portfolio', favicon: '', fontFamily: 'Inter', colorScheme: 'light', fontSize: 'base', contentWidth: 'standard' },
+    siteSettings: { 
+      title: "Jane's Portfolio", 
+      description: 'My personal portfolio', 
+      favicon: '', 
+      fontFamily: 'Inter', 
+      colorScheme: 'light', 
+      fontSize: 'base', 
+      contentWidth: 'standard',
+      portfolioUrl: '',
+      ogTitle: '',
+      ogDescription: '',
+      ogImage: '',
+      analyticsProvider: 'google',
+      analyticsId: '',
+      enableThemeToggle: true,
+      enableProjectFilters: true
+    },
     contactForm: { enabled: false, provider: 'web3forms', apiKey: '', buttonText: 'Send Message', successMessage: 'Thank you! Your message has been sent successfully.' },
     advancedCode: { customCss: '', customJs: '' }
   });

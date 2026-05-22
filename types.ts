@@ -83,6 +83,14 @@ export interface SiteSettings {
   colorScheme: ColorScheme;
   fontSize: FontSize;
   contentWidth: ContentWidth;
+  portfolioUrl?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  analyticsProvider?: 'google' | 'umami';
+  analyticsId?: string;
+  enableThemeToggle?: boolean;
+  enableProjectFilters?: boolean;
 }
 
 

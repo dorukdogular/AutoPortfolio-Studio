@@ -45,6 +45,16 @@ const SiteSettingsTab: React.FC<SiteSettingsTabProps> = ({ data, setData }) => {
         }));
     };
 
+    const handleToggleSetting = (key: 'enableThemeToggle' | 'enableProjectFilters') => {
+        setData(prev => ({
+            ...prev,
+            siteSettings: {
+                ...prev.siteSettings,
+                [key]: !(prev.siteSettings[key] ?? true),
+            },
+        }));
+    };
+
     const handleFaviconChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -105,7 +115,8 @@ const SiteSettingsTab: React.FC<SiteSettingsTabProps> = ({ data, setData }) => {
                 <h3 className="text-lg font-semibold mb-2">Meta Information</h3>
                 <Input label="Site Title" name="title" value={data.siteSettings.title} onChange={handleChange} placeholder="e.g., Jane Doe's Portfolio" />
                 <Input label="Site Description" name="description" value={data.siteSettings.description} onChange={handleChange} placeholder="A short description for search engines" />
-                 <div>
+                <Input label="Live Portfolio URL (For Print CV QR Code)" name="portfolioUrl" value={data.siteSettings.portfolioUrl || ''} onChange={handleChange} placeholder="e.g., https://janedoe.github.io" />
+                 <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-300 mb-1">Favicon</label>
                       <input type="file" accept="image/png, image/x-icon, image/svg+xml" onChange={handleFaviconChange} className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"/>
                  </div>
@@ -219,6 +230,79 @@ const SiteSettingsTab: React.FC<SiteSettingsTabProps> = ({ data, setData }) => {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Custom Feature Toggles */}
+            <div className="border-t border-gray-750 pt-6">
+                <h3 className="text-lg font-semibold mb-3 text-indigo-400">Interactive Features</h3>
+                
+                {/* Theme Toggle Feature */}
+                <div className="bg-gray-700/30 p-4 rounded-lg border border-gray-600/50 flex items-center justify-between mb-4">
+                    <div>
+                        <h4 className="font-semibold text-white">Enable Light/Dark Mode Switcher</h4>
+                        <p className="text-xs text-gray-400 mt-0.5">Adds a modern sun/moon floating button for visitors to toggle theme</p>
+                    </div>
+                    <button
+                        onClick={() => handleToggleSetting('enableThemeToggle')}
+                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                            (data.siteSettings.enableThemeToggle ?? true) ? 'bg-indigo-600' : 'bg-gray-600'
+                        }`}
+                    >
+                        <span
+                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                (data.siteSettings.enableThemeToggle ?? true) ? 'translate-x-5' : 'translate-x-0'
+                            }`}
+                        />
+                    </button>
+                </div>
+
+                {/* Project Filter Feature */}
+                <div className="bg-gray-700/30 p-4 rounded-lg border border-gray-600/50 flex items-center justify-between">
+                    <div>
+                        <h4 className="font-semibold text-white">Enable Project Skill Filters</h4>
+                        <p className="text-xs text-gray-400 mt-0.5">Adds interactive skill/category filters above your work grid</p>
+                    </div>
+                    <button
+                        onClick={() => handleToggleSetting('enableProjectFilters')}
+                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                            (data.siteSettings.enableProjectFilters ?? true) ? 'bg-indigo-600' : 'bg-gray-600'
+                        }`}
+                    >
+                        <span
+                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                (data.siteSettings.enableProjectFilters ?? true) ? 'translate-x-5' : 'translate-x-0'
+                            }`}
+                        />
+                    </button>
+                </div>
+            </div>
+
+            {/* SEO & Open Graph Section */}
+            <div className="border-t border-gray-750 pt-6 space-y-4">
+                <h3 className="text-lg font-semibold text-indigo-400">SEO & Social Meta Tags</h3>
+                <p className="text-xs text-gray-400">Customize how your site appears when shared on LinkedIn, WhatsApp, X/Twitter, or Google search.</p>
+                <Input label="Open Graph Title (og:title)" name="ogTitle" value={data.siteSettings.ogTitle || ''} onChange={handleChange} placeholder="e.g., Jane Doe - Senior Creative Designer" />
+                <Input label="Open Graph Description (og:description)" name="ogDescription" value={data.siteSettings.ogDescription || ''} onChange={handleChange} placeholder="e.g., Explore my design portfolio featuring modern web architectures..." />
+                <Input label="Social Share Card Image Link (og:image)" name="ogImage" value={data.siteSettings.ogImage || ''} onChange={handleChange} placeholder="e.g., https://janedoe.github.io/assets/og-preview.png" />
+            </div>
+
+            {/* Analytics Section */}
+            <div className="border-t border-gray-750 pt-6 space-y-4">
+                <h3 className="text-lg font-semibold text-indigo-400">Analytics Tracking</h3>
+                <p className="text-xs text-gray-400">Connect tracking keys to monitor visitor counts and analytics statistics.</p>
+                
+                <Select label="Analytics Provider" name="analyticsProvider" value={data.siteSettings.analyticsProvider || 'google'} onChange={handleChange}>
+                    <option value="google">Google Analytics (G-XXXXXX)</option>
+                    <option value="umami">Umami Analytics (Website ID)</option>
+                </Select>
+                
+                <Input 
+                    label="Measurement ID / Website ID" 
+                    name="analyticsId" 
+                    value={data.siteSettings.analyticsId || ''} 
+                    onChange={handleChange} 
+                    placeholder={data.siteSettings.analyticsProvider === 'umami' ? 'e.g., 00000000-0000-0000-0000-000000000000' : 'e.g., G-XXXXXXXXXX'} 
+                />
             </div>
 
             {/* Custom CSS / Custom JS Injection Section */}
