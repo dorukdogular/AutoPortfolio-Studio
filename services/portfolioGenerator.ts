@@ -1563,7 +1563,7 @@ const generateClientScript = (data: PortfolioData) => {
     });
 
     // --- Interactive Skills Tag Sync ---
-    \${enableFilters ? \`
+    ${enableFilters ? `
     document.addEventListener('DOMContentLoaded', () => {
       const skillBadges = document.querySelectorAll('#skills .skill-badge');
       skillBadges.forEach(badge => {
@@ -1595,7 +1595,7 @@ const generateClientScript = (data: PortfolioData) => {
         });
       });
     });
-    \` : ''}
+    ` : ''}
 
     // --- Premium Project Detail Modal ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -1813,10 +1813,10 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
                     </button>
                     
                     <!-- Vertical Divider -->
-                    <div class="h-6 w-px bg-gray-350 dark:bg-white/10 mx-2" style="display: \${(siteSettings.enableThemeToggle ?? true) ? 'block' : 'none'};"></div>
+                    <div class="h-6 w-px bg-gray-350 dark:bg-white/10 mx-2" style="display: ${(siteSettings.enableThemeToggle ?? true) ? 'block' : 'none'};"></div>
                     
                     <!-- Theme Switcher Button -->
-                    <button id="theme-toggle-btn" title="Toggle Theme" style="display: \${(siteSettings.enableThemeToggle ?? true) ? 'flex' : 'none'};" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:scale-105 active:scale-95 transition-all duration-200">
+                    <button id="theme-toggle-btn" title="Toggle Theme" style="display: ${(siteSettings.enableThemeToggle ?? true) ? 'flex' : 'none'};" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:scale-105 active:scale-95 transition-all duration-200">
                         <svg id="theme-sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M4.95 4.95l1.58 1.58m10.95 10.95l1.58 1.58M3 12h2.25m13.5 0H21m-2.234-7.016l-1.58 1.58m-10.95 10.95l-1.58 1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path>
                         </svg>
