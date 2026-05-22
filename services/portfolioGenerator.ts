@@ -199,6 +199,10 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
 
     /* PRINT (PDF) STYLES */
     @media print {
+        html, body, .card, .skill-badge {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
         body {
             background-color: white !important;
             color: black !important;
@@ -1074,6 +1078,7 @@ const generateLayoutSpecificCSS = (layoutId: string) => allLayoutCSS[layoutId] |
 const generateClientScript = (data: PortfolioData) => {
   const hasContactForm = data.contactForm?.enabled;
   const formSettings = data.contactForm;
+  const enableFilters = data.siteSettings.enableProjectFilters ?? true;
 
   let contactFormJs = '';
 
@@ -1209,7 +1214,11 @@ const generateClientScript = (data: PortfolioData) => {
 
       if (printBtn) {
         printBtn.addEventListener('click', () => {
-          window.print();
+          if (window.self !== window.top) {
+            window.parent.postMessage({ type: 'print-portfolio' }, '*');
+          } else {
+            window.print();
+          }
         });
       }
     });
@@ -1253,6 +1262,7 @@ const generateClientScript = (data: PortfolioData) => {
     });
 
     // --- Interactive Skills Tag Sync ---
+    \${enableFilters ? \`
     document.addEventListener('DOMContentLoaded', () => {
       const skillBadges = document.querySelectorAll('#skills .skill-badge');
       skillBadges.forEach(badge => {
@@ -1284,6 +1294,7 @@ const generateClientScript = (data: PortfolioData) => {
         });
       });
     });
+    \` : ''}
 
     // --- Premium Project Detail Modal ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -1406,9 +1417,9 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
         </script>
     ` : '';
     
-    const ogTitle = siteSettings.ogTitle || siteSettings.title;
-    const ogDescription = siteSettings.ogDescription || siteSettings.description;
-    const ogImage = siteSettings.ogImage || data.basicInfo.profileImage;
+    const ogTitle = siteSettings.ogTitle || `${data.basicInfo.name} | ${data.basicInfo.title || 'Personal Portfolio'}`;
+    const ogDescription = siteSettings.ogDescription || data.basicInfo.bio || siteSettings.description || `Explore the personal portfolio of ${data.basicInfo.name}.`;
+    const ogImage = siteSettings.ogImage || data.basicInfo.profileImage || '';
     const ogUrl = siteSettings.portfolioUrl || '';
 
     let analyticsHtml = '';
@@ -1483,23 +1494,30 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
             ` : ''}
             ${generateHTMLContent(data)}
             
-            <!-- Floating Glassmorphic Action Panel -->
-            <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50 no-print" id="floating-actions">
-                <!-- PDF Download Button -->
-                <button id="download-pdf-btn" title="Download Resume / PDF" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 backdrop-blur-md border border-gray-200/20 dark:border-white/10 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
-                    </svg>
-                </button>
-                <!-- Theme Switcher Button -->
-                <button id="theme-toggle-btn" title="Toggle Theme" style="display: ${(siteSettings.enableThemeToggle ?? true) ? 'flex' : 'none'};" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 backdrop-blur-md border border-gray-200/20 dark:border-white/10 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200">
-                    <svg id="theme-sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M4.95 4.95l1.58 1.58m10.95 10.95l1.58 1.58M3 12h2.25m13.5 0H21m-2.234-7.016l-1.58 1.58m-10.95 10.95l-1.58 1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path>
-                    </svg>
-                    <svg id="theme-moon-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"></path>
-                    </svg>
-                </button>
+            <!-- Floating Premium Glassmorphic Control Dock -->
+            <div class="fixed bottom-6 right-6 flex items-center gap-2 z-50 no-print" id="floating-actions">
+                <div class="flex items-center p-1.5 rounded-full bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200/30 dark:border-white/10 shadow-2xl transition-all duration-300 hover:shadow-primary/10">
+                    <!-- CV Export Button -->
+                    <button id="download-pdf-btn" title="Export Portfolio as CV / PDF" class="flex items-center gap-2 px-4 py-2.5 rounded-full text-white hover:brightness-110 active:scale-95 transition-all duration-200 shadow-md" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%); border: none;">
+                        <svg class="w-4.5 h-4.5 animate-pulse" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                        </svg>
+                        <span class="text-xs font-bold tracking-wide">Export CV</span>
+                    </button>
+                    
+                    <!-- Vertical Divider -->
+                    <div class="h-6 w-px bg-gray-350 dark:bg-white/10 mx-2" style="display: \${(siteSettings.enableThemeToggle ?? true) ? 'block' : 'none'};"></div>
+                    
+                    <!-- Theme Switcher Button -->
+                    <button id="theme-toggle-btn" title="Toggle Theme" style="display: \${(siteSettings.enableThemeToggle ?? true) ? 'flex' : 'none'};" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:scale-105 active:scale-95 transition-all duration-200">
+                        <svg id="theme-sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M4.95 4.95l1.58 1.58m10.95 10.95l1.58 1.58M3 12h2.25m13.5 0H21m-2.234-7.016l-1.58 1.58m-10.95 10.95l-1.58 1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path>
+                        </svg>
+                        <svg id="theme-moon-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
             
             ${clientScript}

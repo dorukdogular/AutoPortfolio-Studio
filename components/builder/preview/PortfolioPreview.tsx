@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { PortfolioData, Theme } from '../../../types';
 import { generatePreviewHtml } from '../../../services/portfolioGenerator';
 
@@ -10,11 +10,31 @@ interface PortfolioPreviewProps {
 
 const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ data, theme }) => {
     const [htmlSrcDoc, setHtmlSrcDoc] = useState('');
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     useEffect(() => {
         const html = generatePreviewHtml(data, theme);
         setHtmlSrcDoc(html);
     }, [data, theme]);
+
+    useEffect(() => {
+        const handleMessage = (e: MessageEvent) => {
+            if (e.data && e.data.type === 'print-portfolio') {
+                const iframe = iframeRef.current;
+                if (iframe && iframe.contentWindow) {
+                    try {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                    } catch (err) {
+                        console.error('Iframe print failed, falling back to window print:', err);
+                        window.print();
+                    }
+                }
+            }
+        };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
 
     return (
         <div className="w-full h-full bg-gray-800 rounded-lg shadow-lg overflow-hidden">
@@ -29,10 +49,11 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ data, theme }) => {
                 </div>
             </div>
             <iframe
+                ref={iframeRef}
                 srcDoc={htmlSrcDoc}
                 title="Portfolio Preview"
                 className="w-full h-full border-none"
-                sandbox="allow-scripts"
+                sandbox="allow-scripts allow-modals allow-same-origin"
             />
         </div>
     );
