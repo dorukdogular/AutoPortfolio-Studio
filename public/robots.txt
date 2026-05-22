@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dorukdogular.github.io/AutoPortfolio-Studio/sitemap.xml
