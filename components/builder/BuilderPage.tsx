@@ -13,6 +13,7 @@ import TestimonialsTab from './tabs/TestimonialsTab';
 import CertificationsTab from './tabs/CertificationsTab';
 import SiteSettingsTab from './tabs/SiteSettingsTab';
 import GitHubDeployModal from './GitHubDeployModal';
+import ExportStudioModal from './ExportStudioModal';
 import saveAs from 'file-saver';
 import JSZip from 'jszip';
 import { generateFinalHtml } from '../../services/portfolioGenerator';
@@ -40,6 +41,7 @@ const BuilderPage: React.FC = () => {
   const [themes, setThemes] = useState<Theme[]>(DEFAULT_THEMES);
   const [activeTab, setActiveTab] = useState<Tab>('Basic Info');
   const [isDeployModalOpen, setDeployModalOpen] = useState(false);
+  const [isExportModalOpen, setExportModalOpen] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   const addTheme = (theme: Omit<Theme, 'id'>) => {
@@ -186,6 +188,15 @@ This repository contains a pre-configured GitHub Actions workflow that automates
     event.target.value = ''; // Reset input to allow re-uploading the same file
   };
 
+  const handlePrintResume = () => {
+    const iframe = document.querySelector('iframe[title="Portfolio Preview"]') as HTMLIFrameElement;
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.print();
+    } else {
+      alert("Could not find portfolio preview to print.");
+    }
+  };
+
   const tabs: Tab[] = ['Basic Info', 'Projects', 'Experience', 'Education', 'Testimonials', 'Certs', 'Socials', 'Layout', 'Theme', 'Settings'];
 
   const renderTabContent = () => {
@@ -224,22 +235,20 @@ This repository contains a pre-configured GitHub Actions workflow that automates
         </div>
         <div className="mt-6 pt-6 border-t border-gray-700 space-y-3">
             <div className="flex gap-4">
-                <button onClick={handleImportClick} className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-gray-600 rounded-md hover:bg-gray-500 transition-colors font-semibold">
-                    <ArrowUpTrayIcon className="w-5 h-5" /> Import
+                <button onClick={handleImportClick} className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-700/60 text-gray-300 rounded-xl hover:bg-gray-600 transition-colors font-semibold border border-gray-600/30">
+                    <ArrowUpTrayIcon className="w-4 h-4" /> Import Backup
                 </button>
                 <input type="file" ref={importInputRef} onChange={handleImportConfig} accept=".json" className="hidden" />
-                <button onClick={handleExportConfig} className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-gray-600 rounded-md hover:bg-gray-500 transition-colors font-semibold">
-                    <ArrowDownTrayIcon className="w-5 h-5" /> Export
-                </button>
             </div>
-            <div className="flex gap-4">
-                <button onClick={() => setDeployModalOpen(true)} className="flex-1 py-2 px-4 bg-green-600 rounded-md hover:bg-green-700 transition-colors font-semibold">
-                    Deploy
-                </button>
-                <button onClick={handleDownloadZip} className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors font-semibold">
-                    <ArrowDownOnSquareIcon className="w-5 h-5" /> Download .zip
-                </button>
-            </div>
+            <button 
+                onClick={() => setExportModalOpen(true)} 
+                className="w-full flex items-center justify-center gap-2.5 py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl hover:from-indigo-500 hover:to-violet-500 transition-all font-bold shadow-lg shadow-indigo-500/20 active:scale-[0.98] duration-200"
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"></path>
+                </svg>
+                Export & Publish Studio
+            </button>
         </div>
       </aside>
 
@@ -248,6 +257,14 @@ This repository contains a pre-configured GitHub Actions workflow that automates
       </main>
 
       <GitHubDeployModal isOpen={isDeployModalOpen} onClose={() => setDeployModalOpen(false)} onDownloadRequest={handleDownloadZip} />
+      <ExportStudioModal
+        isOpen={isExportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        onDownloadZip={handleDownloadZip}
+        onOpenDeploy={() => setDeployModalOpen(true)}
+        onExportConfig={handleExportConfig}
+        onPrintResume={handlePrintResume}
+      />
     </div>
   );
 };

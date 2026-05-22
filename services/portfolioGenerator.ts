@@ -51,8 +51,11 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
     :root {
         ${siteSettings.colorScheme === 'light' ? lightVars : darkVars}
         --font-family: '${siteSettings.fontFamily}', sans-serif;
-        --font-size-base: ${fontSizes[siteSettings.fontSize] || '1rem'};
         --content-width: ${contentWidths[siteSettings.contentWidth] || '1280px'};
+    }
+
+    html {
+        font-size: ${siteSettings.fontSize === 'sm' ? '14px' : siteSettings.fontSize === 'lg' ? '18px' : '16px'};
     }
 
     html.dark { ${darkVars} }
@@ -62,18 +65,21 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
     @media (prefers-color-scheme: light) { html.system { ${lightVars} } }
 
     /* BASE STYLES */
+    body, h1, h2, h3, h4, h5, h6, input, textarea, button, select {
+        font-family: var(--font-family);
+        transition: background-color 0.3s, color 0.3s;
+    }
     body {
         background-color: var(--color-background);
         color: var(--color-text);
-        font-family: var(--font-family);
-        font-size: var(--font-size-base);
         line-height: 1.6;
-        transition: background-color 0.3s, color 0.3s;
     }
     .container { max-width: var(--content-width); }
     h1, h2, h3, h4, h5, h6 { color: var(--color-heading); font-weight: 700; }
     a { color: var(--color-primary); text-decoration: none; transition: color 0.3s; }
     a:hover { color: var(--color-secondary); }
+    
+    /* CARD & NESTED CARD STYLES */
     .card {
       background-color: var(--color-card);
       border-radius: 0.75rem;
@@ -82,6 +88,28 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
       transition: transform 0.3s, box-shadow 0.3s;
     }
     .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); }
+    
+    /* Elegant nested card cleanup to solve double border/shadow issues */
+    .card .card {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+        border: 1px solid rgba(0, 0, 0, 0.04) !important;
+        box-shadow: none !important;
+        transform: none !important;
+        padding: 1.25rem !important;
+    }
+    html.dark .card .card {
+        background-color: rgba(255, 255, 255, 0.02) !important;
+        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+    }
+    .card .card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+        background-color: rgba(0, 0, 0, 0.03) !important;
+    }
+    html.dark .card .card:hover {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
     .skill-badge { background-color: var(--color-primary); color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; }
     .section { padding-top: 3rem; padding-bottom: 3rem; }
     .section-title { color: var(--color-heading); font-size: 2.25rem; font-weight: 800; text-align: center; margin-bottom: 2.5rem; }
@@ -549,8 +577,39 @@ const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
     'gallery-grid': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderSkills(data)}${renderProjects(data)}${renderExperience(data)}${renderEducation(data)}${renderTestimonials(data)}${renderCertifications(data)}${renderContactForm(data)}</main>${renderFooter(data)}</div>`,
     'timeline': data => `<div class="container mx-auto p-4 md:p-8"><header class="text-center py-12">${renderHeader(data)}</header><main>${renderExperience(data)}${renderSkills(data)}${renderProjects(data)}${renderEducation(data)}${renderTestimonials(data)}${renderCertifications(data)}${renderContactForm(data)}</main>${renderFooter(data)}</div>`,
     'centered-card': data => `<div class="min-h-screen flex items-center justify-center p-4"><div class="container bg-[var(--color-card)] rounded-xl shadow-2xl p-8 md:p-12"><header class="text-center mb-12">${renderHeader(data)}</header><main>${renderAllSections(data)}</main>${renderFooter(data)}</div></div>`,
-    'interactive-blocks': data => `<div class="container mx-auto p-4 md:p-8"><div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><header class="lg:col-span-3 text-center card">${renderHeader(data)}</header><div class="lg:col-span-2 card">${renderProjects(data)}</div><div class="card">${renderSkills(data)}</div><div class="lg:col-span-3 card">${renderExperience(data)}</div>${data.contactForm?.enabled ? `<div class="lg:col-span-3 card">${renderContactForm(data)}</div>` : ''}</div>${renderFooter(data)}</div>`,
-    'booklet': data => `<div class="flex snap-x snap-mandatory h-screen w-screen overflow-x-auto"><section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center text-center p-8">${renderHeader(data)}</section>${[renderSkills, renderProjects, renderExperience, renderEducation].map(f => `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${f(data)}</section>`).join('')}${data.contactForm?.enabled ? `<section class="snap-start flex-shrink-0 w-screen h-screen flex flex-col justify-center p-8">${renderContactForm(data)}</section>` : ''}</div>`,
+    'interactive-blocks': data => {
+      const hasProjects = data.projects.length > 0;
+      const hasSkills = data.skills.length > 0;
+      const hasExperience = data.experience.length > 0;
+      const hasContact = data.contactForm?.enabled;
+
+      return `<div class="container mx-auto p-4 md:p-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <header class="lg:col-span-3 text-center card">${renderHeader(data)}</header>
+          ${hasProjects ? `<div class="lg:col-span-2 card">${renderProjects(data)}</div>` : ''}
+          ${hasSkills ? `<div class="card">${renderSkills(data)}</div>` : ''}
+          ${hasExperience ? `<div class="lg:col-span-3 card">${renderExperience(data)}</div>` : ''}
+          ${hasContact ? `<div class="lg:col-span-3 card">${renderContactForm(data)}</div>` : ''}
+        </div>
+        ${renderFooter(data)}
+      </div>`;
+    },
+    'booklet': data => {
+        const slides = [
+            `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center text-center">${renderHeader(data)}</div>`,
+            data.skills.length > 0 ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderSkills(data)}</div>` : '',
+            data.projects.length > 0 ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderProjects(data)}</div>` : '',
+            data.experience.length > 0 ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderExperience(data)}</div>` : '',
+            data.education.length > 0 ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderEducation(data)}</div>` : '',
+            data.testimonials.length > 0 ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderTestimonials(data)}</div>` : '',
+            data.certifications.length > 0 ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderCertifications(data)}</div>` : '',
+            data.contactForm?.enabled ? `<div class="max-w-4xl mx-auto w-full min-h-full flex flex-col justify-center">${renderContactForm(data)}</div>` : ''
+        ].filter(Boolean);
+
+        return `<div class="flex snap-x snap-mandatory h-screen w-screen overflow-x-auto bg-[var(--color-background)]">
+            ${slides.map(slide => `<section class="snap-start flex-shrink-0 w-screen h-screen overflow-y-auto py-16 px-4 md:px-8 bg-[var(--color-background)]">${slide}</section>`).join('')}
+        </div>`;
+    },
     'material-resume': data => `<div class="container mx-auto p-4 md:p-8 max-w-4xl"><div class="card"><header class="text-center p-8">${renderHeader(data)}</header><main class="p-8">${renderAllSections(data)}</main>${renderFooter(data)}</div></div>`,
     'sidebar-modern': data => `
     <div class="flex flex-col md:flex-row min-h-screen bg-[var(--color-background)]">
@@ -571,27 +630,39 @@ const allLayoutGenerators: Record<string, (data: PortfolioData) => string> = {
         <div class="md:hidden mt-12">${renderFooter(data)}</div>
       </main>
     </div>`,
-    'bento-grid': data => `
-    <div class="bento-theme min-h-screen p-4 md:p-8 bg-[var(--color-background)]">
-      <div class="max-w-7xl mx-auto">
-        <header class="mb-12 text-center bg-[var(--color-card)] p-12 rounded-[2rem] shadow-sm border border-[var(--color-text)]/5">${renderHeader(data)}</header>
-        <main class="grid grid-cols-1 md:grid-cols-12 auto-rows-max gap-6">
-          <div class="md:col-span-8 card !h-full flex flex-col">${renderProjects(data)}</div>
-          <div class="md:col-span-4 card !h-full relative overflow-hidden flex flex-col justify-center text-center">
-            <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 z-0"></div>
-            <div class="relative z-10">${renderSkills(data)}</div>
-          </div>
-          <div class="md:col-span-6 card !h-full">${renderExperience(data)}</div>
-          <div class="md:col-span-6 card !h-full flex flex-col justify-between">
-            ${renderEducation(data)}
-            ${data.certifications.length > 0 ? `<div class="mt-8 pt-8 border-t border-[var(--color-text)]/10">${renderCertifications(data)}</div>` : ''}
-          </div>
-          ${data.testimonials.length > 0 ? `<div class="md:col-span-12 card">${renderTestimonials(data)}</div>` : ''}
-          ${data.contactForm?.enabled ? `<div class="md:col-span-12 card p-8 md:p-16">${renderContactForm(data)}</div>` : ''}
-        </main>
-        ${renderFooter(data)}
-      </div>
-    </div>`,
+    'bento-grid': data => {
+      const hasProjects = data.projects.length > 0;
+      const hasSkills = data.skills.length > 0;
+      const hasExperience = data.experience.length > 0;
+      const hasEducation = data.education.length > 0;
+      const hasCertifications = data.certifications.length > 0;
+      const hasTestimonials = data.testimonials.length > 0;
+      const hasContact = data.contactForm?.enabled;
+
+      return `
+      <div class="bento-theme min-h-screen p-4 md:p-8 bg-[var(--color-background)]">
+        <div class="max-w-7xl mx-auto">
+          <header class="mb-12 text-center bg-[var(--color-card)] p-12 rounded-[2rem] shadow-sm border border-[var(--color-text)]/5">${renderHeader(data)}</header>
+          <main class="grid grid-cols-1 md:grid-cols-12 auto-rows-max gap-6">
+            ${hasProjects ? `<div class="md:col-span-8 card !h-full flex flex-col">${renderProjects(data)}</div>` : ''}
+            ${hasSkills ? `
+            <div class="md:col-span-4 card !h-full relative overflow-hidden flex flex-col justify-center text-center">
+              <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 z-0"></div>
+              <div class="relative z-10">${renderSkills(data)}</div>
+            </div>` : ''}
+            ${hasExperience ? `<div class="md:col-span-6 card !h-full">${renderExperience(data)}</div>` : ''}
+            ${(hasEducation || hasCertifications) ? `
+            <div class="md:col-span-6 card !h-full flex flex-col justify-between">
+              ${renderEducation(data)}
+              ${hasCertifications ? `<div class="mt-8 pt-8 border-t border-[var(--color-text)]/10">${renderCertifications(data)}</div>` : ''}
+            </div>` : ''}
+            ${hasTestimonials ? `<div class="md:col-span-12 card">${renderTestimonials(data)}</div>` : ''}
+            ${hasContact ? `<div class="md:col-span-12 card p-8 md:p-16">${renderContactForm(data)}</div>` : ''}
+          </main>
+          ${renderFooter(data)}
+        </div>
+      </div>`;
+    },
     'neo-brutalism': data => `<div class="neo-brutalism-theme min-h-screen p-4 md:p-8 max-w-5xl mx-auto"><header class="text-left py-12 border-b-4 border-black mb-12">${renderHeader(data)}</header><main class="space-y-12">${renderAllSections(data)}</main>${renderFooter(data)}</div>`,
     'glassmorphism-aurora': data => `
     <div class="aurora-theme min-h-screen relative overflow-hidden p-4 md:p-8 flex flex-col items-center justify-center">
