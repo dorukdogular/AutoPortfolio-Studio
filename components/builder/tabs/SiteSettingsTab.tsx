@@ -141,6 +141,12 @@ const SiteSettingsTab: React.FC<SiteSettingsTabProps> = ({ data, setData }) => {
                     <option value="wide">Wide</option>
                     <option value="full">Full Width</option>
                 </Select>
+                <Select label="Backdrop Effect" name="backdropEffect" value={data.siteSettings.backdropEffect || 'none'} onChange={handleChange}>
+                    <option value="none">None (Clean Background)</option>
+                    <option value="aurora">Animated Aurora Blobs</option>
+                    <option value="grid">Cyberpunk Net Grid</option>
+                    <option value="dots">Minimal Dot Matrix</option>
+                </Select>
             </div>
 
             {/* Static Contact Form Section */}

@@ -154,6 +154,44 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
         pointer-events: none !important;
     }
 
+    /* BACKDROP EFFECTS */
+    .cyber-grid {
+        background-size: 40px 40px;
+        background-image: linear-gradient(to right, rgba(128, 90, 213, 0.05) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(128, 90, 213, 0.05) 1px, transparent 1px);
+    }
+    html.dark .cyber-grid {
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+    .dot-matrix {
+        background-size: 24px 24px;
+        background-image: radial-gradient(rgba(128, 90, 213, 0.08) 1px, transparent 1px);
+    }
+    html.dark .dot-matrix {
+        background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    }
+
+    @keyframes floatBlob1 {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(100px, -80px) scale(1.15); }
+        100% { transform: translate(-80px, 120px) scale(0.9); }
+    }
+    @keyframes floatBlob2 {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-80px, 100px) scale(1.2); }
+        100% { transform: translate(120px, -60px) scale(0.85); }
+    }
+
+    /* INTERACTIVE SKILL BADGES */
+    .skill-badge {
+        transition: all 0.3s ease;
+    }
+    .skill-badge:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 4px 10px rgba(128, 90, 213, 0.2);
+    }
+
     /* PRINT ONLY QR CODE */
     .print-qr-code {
         display: none !important;
@@ -167,7 +205,7 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
             font-size: 11pt !important;
             margin: 1.5cm !important;
         }
-        .no-print, #floating-actions, #contact, footer, button, .flex-shrink-0, #project-filters {
+        .no-print, #floating-actions, #contact, footer, button, .flex-shrink-0, #project-filters, #project-detail-modal {
             display: none !important;
         }
         .card {
@@ -1214,6 +1252,135 @@ const generateClientScript = (data: PortfolioData) => {
       }
     });
 
+    // --- Interactive Skills Tag Sync ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const skillBadges = document.querySelectorAll('#skills .skill-badge');
+      skillBadges.forEach(badge => {
+        badge.style.cursor = 'pointer';
+        badge.title = 'Click to filter projects by this skill';
+        badge.addEventListener('click', () => {
+          const skillName = badge.textContent.trim().toLowerCase();
+          const filterBtn = document.querySelector('.project-filter-btn[data-filter="' + skillName + '"]');
+          
+          if (filterBtn) {
+            filterBtn.click();
+            document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            const projectCards = document.querySelectorAll('.project-card');
+            skillBadges.forEach(b => b.classList.remove('ring-2', 'ring-[var(--color-primary)]'));
+            badge.classList.add('ring-2', 'ring-[var(--color-primary)]');
+            
+            projectCards.forEach(card => {
+              const text = card.textContent.toLowerCase();
+              if (text.includes(skillName)) {
+                card.classList.remove('filtered-out');
+              } else {
+                card.classList.add('filtered-out');
+              }
+            });
+            
+            document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    });
+
+    // --- Premium Project Detail Modal ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.createElement('div');
+      modal.id = 'project-detail-modal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 no-print';
+      modal.innerHTML = \`
+        <div class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl overflow-hidden border border-gray-200/20 dark:border-white/10 shadow-2xl transform scale-95 transition-transform duration-300">
+          <button id="modal-close-btn" class="absolute top-4 right-4 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+          <div id="modal-image-container" class="w-full h-64 bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
+            <img id="modal-image" src="" alt="" class="w-full h-full object-cover">
+          </div>
+          <div class="p-6 md:p-8 space-y-4">
+            <h3 id="modal-title" class="text-2xl font-extrabold text-[var(--color-heading)]"></h3>
+            <div id="modal-tags" class="flex flex-wrap gap-2"></div>
+            <p id="modal-description" class="text-sm md:text-base leading-relaxed text-[var(--color-text)] overflow-y-auto max-h-48"></p>
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-250/20">
+              <a id="modal-link" href="" target="_blank" rel="noopener noreferrer" class="bg-[var(--color-primary)] text-white font-bold py-2.5 px-6 rounded-xl hover:bg-[var(--color-secondary)] transition-colors text-sm shadow-md inline-flex items-center gap-2">
+                <span>Visit Live Project</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      \`;
+      document.body.appendChild(modal);
+
+      const closeBtn = document.getElementById('modal-close-btn');
+      const closeModal = () => {
+        modal.firstElementChild.classList.remove('scale-100');
+        modal.firstElementChild.classList.add('scale-95');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+      const projectCards = document.querySelectorAll('.project-card');
+      projectCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+          if (e.target.tagName === 'A' || e.target.closest('a')) return;
+          
+          const title = card.querySelector('h3').textContent;
+          const desc = card.querySelector('p').innerHTML;
+          const imgEl = card.querySelector('img');
+          const imgSrc = imgEl ? imgEl.src : '';
+          const linkEl = card.querySelector('a');
+          const linkHref = linkEl ? linkEl.href : '#';
+          const tags = card.getAttribute('data-tags') || '';
+          
+          document.getElementById('modal-title').textContent = title;
+          document.getElementById('modal-description').innerHTML = desc;
+          
+          const modalImg = document.getElementById('modal-image');
+          if (imgSrc) {
+            modalImg.src = imgSrc;
+            modalImg.classList.remove('hidden');
+            document.getElementById('modal-image-container').classList.remove('hidden');
+          } else {
+            modalImg.classList.add('hidden');
+            document.getElementById('modal-image-container').classList.add('hidden');
+          }
+          
+          const linkBtn = document.getElementById('modal-link');
+          if (linkHref && linkHref !== '#' && linkHref !== window.location.href) {
+            linkBtn.href = linkHref;
+            linkBtn.classList.remove('hidden');
+          } else {
+            linkBtn.classList.add('hidden');
+          }
+          
+          const tagsContainer = document.getElementById('modal-tags');
+          tagsContainer.innerHTML = '';
+          if (tags) {
+            tags.split(',').forEach(tag => {
+              const span = document.createElement('span');
+              span.className = 'px-3 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-semibold rounded-full border border-gray-250/20';
+              span.textContent = tag.toUpperCase();
+              tagsContainer.appendChild(span);
+            });
+          }
+          
+          modal.classList.remove('hidden');
+          modal.offsetHeight;
+          modal.classList.remove('opacity-0');
+          modal.classList.add('opacity-100');
+          modal.firstElementChild.classList.remove('scale-95');
+          modal.firstElementChild.classList.add('scale-100');
+        });
+      });
+    });
+
     ${contactFormJs}
   `;
 
@@ -1296,6 +1463,18 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
             ${analyticsHtml}
         </head>
         <body class="antialiased">
+            ${siteSettings.backdropEffect === 'aurora' ? `
+            <div class="aurora-bg no-print" style="position: fixed; inset: 0; z-index: -10; overflow: hidden; pointer-events: none; opacity: 0.6;">
+                <div class="aurora-blob aurora-blob-1" style="position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%); top: -200px; left: -200px; animation: floatBlob1 25s infinite alternate ease-in-out;"></div>
+                <div class="aurora-blob aurora-blob-2" style="position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; background: radial-gradient(circle, var(--color-secondary) 0%, transparent 70%); bottom: -200px; right: -200px; animation: floatBlob2 30s infinite alternate ease-in-out;"></div>
+            </div>
+            ` : ''}
+            ${siteSettings.backdropEffect === 'grid' ? `
+            <div class="cyber-grid no-print" style="position: fixed; inset: 0; z-index: -10; pointer-events: none; opacity: 0.7;"></div>
+            ` : ''}
+            ${siteSettings.backdropEffect === 'dots' ? `
+            <div class="dot-matrix no-print" style="position: fixed; inset: 0; z-index: -10; pointer-events: none; opacity: 0.7;"></div>
+            ` : ''}
             ${siteSettings.portfolioUrl ? `
             <div class="print-qr-code">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(siteSettings.portfolioUrl)}" alt="QR Code">

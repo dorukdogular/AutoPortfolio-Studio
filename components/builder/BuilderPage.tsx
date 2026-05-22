@@ -48,7 +48,8 @@ const BuilderPage: React.FC = () => {
       analyticsProvider: 'google',
       analyticsId: '',
       enableThemeToggle: true,
-      enableProjectFilters: true
+      enableProjectFilters: true,
+      backdropEffect: 'none'
     },
     contactForm: { enabled: false, provider: 'web3forms', apiKey: '', buttonText: 'Send Message', successMessage: 'Thank you! Your message has been sent successfully.' },
     advancedCode: { customCss: '', customJs: '' }

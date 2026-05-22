@@ -91,6 +91,7 @@ export interface SiteSettings {
   analyticsId?: string;
   enableThemeToggle?: boolean;
   enableProjectFilters?: boolean;
+  backdropEffect?: 'none' | 'aurora' | 'grid' | 'dots';
 }
 
 
