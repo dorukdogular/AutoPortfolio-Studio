@@ -86,6 +86,65 @@ const generateCSS = (data: PortfolioData, theme: Theme) => {
     .section { padding-top: 3rem; padding-bottom: 3rem; }
     .section-title { color: var(--color-heading); font-size: 2.25rem; font-weight: 800; text-align: center; margin-bottom: 2.5rem; }
     
+    /* SCROLL REVEAL STYLES */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+    }
+    .scroll-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* GLASSMORPHIC ACTIONS PANEL */
+    #floating-actions button {
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+    #floating-actions button:hover {
+        background-color: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+    }
+
+    /* PRINT (PDF) STYLES */
+    @media print {
+        body {
+            background-color: white !important;
+            color: black !important;
+            font-size: 11pt !important;
+            margin: 1.5cm !important;
+        }
+        .no-print, #floating-actions, #contact, footer, button, .flex-shrink-0 {
+            display: none !important;
+        }
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #e2e8f0 !important;
+            background-color: white !important;
+            color: black !important;
+            transform: none !important;
+            page-break-inside: avoid;
+            margin-bottom: 1rem !important;
+        }
+        .skill-badge {
+            border: 1px solid #cbd5e1 !important;
+            background-color: #f1f5f9 !important;
+            color: black !important;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: black !important;
+            page-break-after: avoid;
+        }
+        .container {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+    
     ${generateLayoutSpecificCSS(data.layoutId)}
 
     </style>
@@ -804,83 +863,153 @@ const generateLayoutSpecificCSS = (layoutId: string) => allLayoutCSS[layoutId] |
 
 const generateClientScript = (data: PortfolioData) => {
   const hasContactForm = data.contactForm?.enabled;
+  const formSettings = data.contactForm;
 
-  if (!hasContactForm) return '';
+  let contactFormJs = '';
 
-  let scriptContent = '';
-
-  if (hasContactForm) {
-    const formSettings = data.contactForm!;
+  if (hasContactForm && formSettings) {
     const successMsg = formSettings.successMessage || 'Thank you! Your message has been sent successfully.';
-    scriptContent += `
+    contactFormJs = `
       // --- Contact Form Submission Handler ---
-      document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('portfolio-contact-form');
-        if (form) {
-          form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const feedback = document.getElementById('form-feedback');
-            const submitBtn = document.getElementById('form-submit-btn');
-            const spinner = document.getElementById('form-spinner');
-            
-            if (!feedback || !submitBtn || !spinner) return;
+      const form = document.getElementById('portfolio-contact-form');
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const feedback = document.getElementById('form-feedback');
+          const submitBtn = document.getElementById('form-submit-btn');
+          const spinner = document.getElementById('form-spinner');
+          
+          if (!feedback || !submitBtn || !spinner) return;
 
-            feedback.className = 'hidden text-sm p-3 rounded-md';
-            feedback.textContent = '';
-            
-            submitBtn.disabled = true;
-            spinner.classList.remove('hidden');
-            
-            try {
-              const formData = new FormData(form);
-              const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                  'Accept': 'application/json'
-                }
-              });
-              
-              if (response.ok) {
-                feedback.textContent = ${JSON.stringify(successMsg)};
-                if (document.querySelector('.neo-brutalism-theme')) {
-                  feedback.className = 'text-sm p-3 border-4 border-black bg-green-200 text-black font-bold';
-                } else if (document.querySelector('.aurora-theme')) {
-                  feedback.className = 'text-sm p-3.5 rounded-2xl bg-green-500/10 text-green-300 border border-green-500/20';
-                } else if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
-                  feedback.className = 'text-sm p-2 border border-[var(--color-primary)] text-[var(--color-primary)] bg-black';
-                } else {
-                  feedback.className = 'text-sm p-3 rounded-md bg-green-500/10 text-green-400 border border-green-500/20';
-                }
-                form.reset();
-              } else {
-                const resData = await response.json();
-                throw new Error(resData.message || 'Something went wrong. Please try again.');
+          feedback.className = 'hidden text-sm p-3 rounded-md';
+          feedback.textContent = '';
+          
+          submitBtn.disabled = true;
+          spinner.classList.remove('hidden');
+          
+          try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'Accept': 'application/json'
               }
-            } catch (err) {
-              feedback.textContent = err.message || 'Could not send message. Please check your network or credentials.';
+            });
+            
+            if (response.ok) {
+              feedback.textContent = ${JSON.stringify(successMsg)};
               if (document.querySelector('.neo-brutalism-theme')) {
-                feedback.className = 'text-sm p-3 border-4 border-black bg-red-200 text-black font-bold';
+                feedback.className = 'text-sm p-3 border-4 border-black bg-green-200 text-black font-bold';
               } else if (document.querySelector('.aurora-theme')) {
-                feedback.className = 'text-sm p-3.5 rounded-2xl bg-red-500/10 text-red-300 border border-red-500/20';
-              } else if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-secondary)]')) {
-                feedback.className = 'text-sm p-2 border border-[var(--color-secondary)] text-[var(--color-secondary)] bg-black';
+                feedback.className = 'text-sm p-3.5 rounded-2xl bg-green-500/10 text-green-300 border border-green-500/20';
+              } else if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-primary)]')) {
+                feedback.className = 'text-sm p-2 border border-[var(--color-primary)] text-[var(--color-primary)] bg-black';
               } else {
-                feedback.className = 'text-sm p-3 rounded-md bg-red-500/10 text-red-400 border border-red-500/20';
+                feedback.className = 'text-sm p-3 rounded-md bg-green-500/10 text-green-400 border border-green-500/20';
               }
-            } finally {
-              submitBtn.disabled = false;
-              spinner.classList.add('hidden');
+              form.reset();
+            } else {
+              const resData = await response.json();
+              throw new Error(resData.message || 'Something went wrong. Please try again.');
             }
-          });
-        }
-      });
+          } catch (err) {
+            feedback.textContent = err.message || 'Could not send message. Please check your network or credentials.';
+            if (document.querySelector('.neo-brutalism-theme')) {
+              feedback.className = 'text-sm p-3 border-4 border-black bg-red-200 text-black font-bold';
+            } else if (document.querySelector('.aurora-theme')) {
+              feedback.className = 'text-sm p-3.5 rounded-2xl bg-red-500/10 text-red-300 border border-red-500/20';
+            } else if (window.location.search.includes('layout=retro') || document.body.innerHTML.includes('border-2 border-[var(--color-secondary)]')) {
+              feedback.className = 'text-sm p-2 border border-[var(--color-secondary)] text-[var(--color-secondary)] bg-black';
+            } else {
+              feedback.className = 'text-sm p-3 rounded-md bg-red-500/10 text-red-400 border border-red-500/20';
+            }
+          } finally {
+            submitBtn.disabled = false;
+            spinner.classList.add('hidden');
+          }
+        });
+      }
     `;
   }
 
+  const coreScripts = `
+    // --- Scroll Reveal Animations ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const animatedElements = document.querySelectorAll('section, .card, header');
+      animatedElements.forEach(el => {
+        el.classList.add('scroll-reveal');
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.05,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      animatedElements.forEach(el => observer.observe(el));
+    });
+
+    // --- Theme Switcher & PDF Print logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const html = document.documentElement;
+      const toggleBtn = document.getElementById('theme-toggle-btn');
+      const sunIcon = document.getElementById('theme-sun-icon');
+      const moonIcon = document.getElementById('theme-moon-icon');
+      const printBtn = document.getElementById('download-pdf-btn');
+
+      const updateIcons = () => {
+        if (html.classList.contains('dark')) {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      };
+
+      // Starting theme check
+      const savedTheme = localStorage.getItem('portfolio-theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        html.className = savedTheme;
+      } else if (html.classList.contains('system')) {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        html.className = systemPrefersDark ? 'dark' : 'light';
+      }
+      updateIcons();
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          if (html.classList.contains('dark')) {
+            html.className = 'light';
+            localStorage.setItem('portfolio-theme', 'light');
+          } else {
+            html.className = 'dark';
+            localStorage.setItem('portfolio-theme', 'dark');
+          }
+          updateIcons();
+        });
+      }
+
+      if (printBtn) {
+        printBtn.addEventListener('click', () => {
+          window.print();
+        });
+      }
+    });
+
+    ${contactFormJs}
+  `;
+
   return `
     <script id="portfolio-client-scripts">
-      ${scriptContent}
+      ${coreScripts}
     </script>
   `;
 };
@@ -908,6 +1037,19 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${escape(siteSettings.title)}</title>
             <meta name="description" content="${escape(siteSettings.description)}">
+            
+            <!-- Open Graph / Facebook -->
+            <meta property="og:type" content="website">
+            <meta property="og:title" content="${escape(siteSettings.title)}">
+            <meta property="og:description" content="${escape(siteSettings.description)}">
+            ${data.basicInfo.profileImage ? `<meta property="og:image" content="${data.basicInfo.profileImage}">` : ''}
+            
+            <!-- Twitter -->
+            <meta property="twitter:card" content="summary_large_image">
+            <meta property="twitter:title" content="${escape(siteSettings.title)}">
+            <meta property="twitter:description" content="${escape(siteSettings.description)}">
+            ${data.basicInfo.profileImage ? `<meta property="twitter:image" content="${data.basicInfo.profileImage}">` : ''}
+            
             ${siteSettings.favicon ? `<link rel="icon" href="${siteSettings.favicon}">` : ''}
             <script src="https://cdn.tailwindcss.com"></script>
             <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -917,6 +1059,26 @@ export const generateFinalHtml = (data: PortfolioData, theme: Theme): string => 
         </head>
         <body class="antialiased">
             ${generateHTMLContent(data)}
+            
+            <!-- Floating Glassmorphic Action Panel -->
+            <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50 no-print" id="floating-actions">
+                <!-- PDF Download Button -->
+                <button id="download-pdf-btn" title="Download Resume / PDF" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 backdrop-blur-md border border-gray-200/20 dark:border-white/10 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                    </svg>
+                </button>
+                <!-- Theme Switcher Button -->
+                <button id="theme-toggle-btn" title="Toggle Theme" class="flex items-center justify-center w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 backdrop-blur-md border border-gray-200/20 dark:border-white/10 shadow-lg hover:scale-110 active:scale-95 transition-all duration-200">
+                    <svg id="theme-sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M4.95 4.95l1.58 1.58m10.95 10.95l1.58 1.58M3 12h2.25m13.5 0H21m-2.234-7.016l-1.58 1.58m-10.95 10.95l-1.58 1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path>
+                    </svg>
+                    <svg id="theme-moon-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"></path>
+                    </svg>
+                </button>
+            </div>
+            
             ${clientScript}
             ${customJs}
         </body>
